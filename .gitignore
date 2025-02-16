@@ -11,3 +11,6 @@ __*
 
 # Do not ignore the hidden .gitignore file
 !.gitignore
+
+test.*
+tests.*
