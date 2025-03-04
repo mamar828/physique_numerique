@@ -90,7 +90,7 @@ def backproject():
                 #votre code ici
                #pas mal la même chose que prédédemment
             #mais avec un sinogramme qui aura été préalablement filtré
-    
+            
     util.saveImage(image, "fbp")
 
 
@@ -109,12 +109,12 @@ def reconFourierSlice():
     #image reconstruite
     image = np.zeros((geo.nbvox, geo.nbvox))
     #votre code ici
-   #ici le défi est de remplir l'IMAGE avec des TF des projections (1D)
-   #au bon angle.
-   #La grille de recon est cartésienne mais le remplissage est cylindrique,
-   #ce qui fait qu'il y aura un bon échantillonnage de IMAGE
-   #au centre et moins bon en périphérie. Un TF inverse de IMAGE vous
-   #donnera l'image recherchée.
+    #ici le défi est de remplir l'IMAGE avec des TF des projections (1D)
+    #au bon angle.
+    #La grille de recon est cartésienne mais le remplissage est cylindrique,
+    #ce qui fait qu'il y aura un bon échantillonnage de IMAGE
+    #au centre et moins bon en périphérie. Un TF inverse de IMAGE vous
+    #donnera l'image recherchée.
 
    
     
