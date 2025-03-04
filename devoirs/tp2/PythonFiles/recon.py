@@ -61,12 +61,21 @@ def laminogram():
                 #le pixel le plus proche ou interpoler linéairement...Rappel, le centre
                 #du détecteur est toujours aligné avec le centre de la grille de
                 #reconstruction peu importe l'angle.
-                
-                
-                
-                
-    util.saveImage(image, "lam")
 
+                # Rajouté par Thomas le 4 mars 2025
+                x = (j-0.5*(geo.nbvox))*geo.voxsize
+                y = (i-0.5*(geo.nbvox))*geo.voxsize
+                r = np.sqrt(x**2+y**2)
+                phi = np.arctan(y/x)
+                if x < 0:
+                    phi += np.pi
+                d = r*np.cos(phi-angles[a])
+                nb_pixels = d//geo.pixsize
+                pixel = geo.nbpix/2+nb_pixels
+                image[i,j] += sinogram[a][pixel]
+                # Fin de ce que j'ai rajouté    
+    util.saveImage(image, "lam")
+laminogram()
 
 ## reconstruire une image TDM en mode retroprojection filtrée
 def backproject():
@@ -90,7 +99,7 @@ def backproject():
                 #votre code ici
                #pas mal la même chose que prédédemment
             #mais avec un sinogramme qui aura été préalablement filtré
-            
+                pass
     util.saveImage(image, "fbp")
 
 
