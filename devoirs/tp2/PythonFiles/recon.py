@@ -50,7 +50,24 @@ def laminogram():
     # pour chaque voxel, trouver la contribution du signal reçu
     for j in range(geo.nbvox): # colonnes de l'image
         print("working on image column: "+str(j+1)+"/"+str(geo.nbvox))
+
+        # Rajouté par Thomas le 4 mars 2025
+        x = (j-0.5*(geo.nbvox))*geo.voxsize
+        
         for i in range(geo.nbvox): # lignes de l'image
+
+            # Rajouté par Thomas le 4 mars 2025
+            y = (i-0.5*(geo.nbvox))*geo.voxsize
+            r = np.sqrt(x**2+y**2)
+            if x == 0:
+                phi = np.pi/2
+                if y < 0:
+                    phi *= -1
+            else:
+                phi = np.arctan(y/x)
+                if x < 0:
+                    phi += np.pi
+
             for a in range(len(angles)):
                 #votre code ici...
                 #le défi est simplement géométrique;
@@ -63,17 +80,12 @@ def laminogram():
                 #reconstruction peu importe l'angle.
 
                 # Rajouté par Thomas le 4 mars 2025
-                x = (j-0.5*(geo.nbvox))*geo.voxsize
-                y = (i-0.5*(geo.nbvox))*geo.voxsize
-                r = np.sqrt(x**2+y**2)
-                phi = np.arctan(y/x)
-                if x < 0:
-                    phi += np.pi
                 d = r*np.cos(phi-angles[a])
                 nb_pixels = d//geo.pixsize
-                pixel = geo.nbpix/2+nb_pixels
-                image[i,j] += sinogram[a][pixel]
+                pixel = int(geo.nbpix/2+nb_pixels)
+                image[i][j] += sinogram[a][pixel]
                 # Fin de ce que j'ai rajouté    
+
     util.saveImage(image, "lam")
 laminogram()
 
