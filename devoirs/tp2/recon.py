@@ -10,9 +10,9 @@ import numpy as np
 import time
 
 # local files
-import geo as geo
-import util as util
-import CTfilter as CTfilter
+import geo
+import util
+import CTfilter
 
 ## créer l'ensemble de données d'entrée à partir des fichiers
 def readInput():
@@ -52,12 +52,12 @@ def laminogram():
         print("working on image column: "+str(j+1)+"/"+str(geo.nbvox))
 
         # Rajouté par Thomas le 4 mars 2025
-        x = (j-0.5*(geo.nbvox))*geo.voxsize
+        x = (j-0.5*(geo.nbvox-1))*geo.voxsize
         
         for i in range(geo.nbvox): # lignes de l'image
 
             # Rajouté par Thomas le 4 mars 2025
-            y = (i-0.5*(geo.nbvox))*geo.voxsize
+            y = (i-0.5*(geo.nbvox-1))*geo.voxsize
             r = np.sqrt(x**2+y**2)
             if x == 0:
                 phi = np.pi/2
@@ -83,11 +83,10 @@ def laminogram():
                 d = r*np.cos(phi-angles[a])
                 nb_pixels = d//geo.pixsize
                 pixel = int(geo.nbpix/2+nb_pixels)
-                image[i][j] += sinogram[a][pixel]
+                image[i][-j] += sinogram[a][pixel] #Pourquoi le - est nécessaire pour avoir une image droite?
                 # Fin de ce que j'ai rajouté    
 
     util.saveImage(image, "lam")
-laminogram()
 
 ## reconstruire une image TDM en mode retroprojection filtrée
 def backproject():
@@ -148,4 +147,3 @@ laminogram()
 #backproject()
 #reconFourierSlice()
 print("--- %s seconds ---" % (time.time() - start_time))
-
