@@ -32,5 +32,5 @@ voxsize = 0.4 # option: 0.4, 0.2
 ## fichiers d'entrée
 dataDir = "./devoirs/tp2/data/"
 anglesFile = "angles.txt"
-sinogramFile = "sinogram-password.txt"
-#sinogramFile = "sinogram-patient.txt"
+#sinogramFile = "sinogram-password.txt"
+sinogramFile = "sinogram-patient.txt"
