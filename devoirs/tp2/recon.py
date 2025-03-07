@@ -162,7 +162,7 @@ def reconFourierSlice():
 
 ## main ##
 start_time = time.time()
-laminogram()
+#laminogram()
 backproject()
 #reconFourierSlice()
 print("--- %s seconds ---" % (time.time() - start_time))

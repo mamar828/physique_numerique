@@ -19,9 +19,8 @@ def filterLine(projection):
 
     # votre code ici
     # un filtre rampe est suffisant 
-    freq = np.fft.fftshift(np.fft.rfft(projection))
-    freq_filtrees = freq*np.arange(1, len(freq)+1, 1)
-    ligne_filtree = np.fft.irfft(np.fft.ifftshift(freq_filtrees)) 
-    #ligne_filtree = np.fft.irfft(np.fft.rfft(projection))
-    
+    freq = np.fft.rfft(projection)
+    freq_filtrees = freq*np.abs(np.fft.rfftfreq(len(projection)))
+    ligne_filtree = np.fft.irfft(freq_filtrees)
+
     return ligne_filtree
