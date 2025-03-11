@@ -10,9 +10,9 @@ import numpy as np
 import time
 
 # local files
-import geo
-import util
-import CTfilter
+import devoirs.tp2.geo as geo
+import devoirs.tp2.util as util
+import devoirs.tp2.CTfilter as CTfilter
 
 ## créer l'ensemble de données d'entrée à partir des fichiers
 def readInput():
@@ -161,8 +161,8 @@ def reconFourierSlice():
 
 
 ## main ##
-start_time = time.time()
-#laminogram()
-backproject()
-#reconFourierSlice()
-print("--- %s seconds ---" % (time.time() - start_time))
+# start_time = time.time()
+# #laminogram()
+# backproject()
+# #reconFourierSlice()
+# print("--- %s seconds ---" % (time.time() - start_time))
