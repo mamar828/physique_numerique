@@ -73,7 +73,7 @@ def laminogram():
                 #reconstruction peu importe l'angle.
 
                 # Rajouté par Thomas le 4 mars 2025
-               d = r*np.cos(phi-angles[a]) 
+                d = r*np.cos(phi-angles[a]) 
                 nb_pixels = d//geo.pixsize
                 pixel = int(geo.nbpix/2+nb_pixels)
                 image[i][-j] += sinogram[a][pixel] #Pourquoi le - est nécessaire pour avoir une image droite?
