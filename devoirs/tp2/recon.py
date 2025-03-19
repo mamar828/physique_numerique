@@ -50,16 +50,8 @@ def laminogram():
     # pour chaque voxel, trouver la contribution du signal reçu
     for j in range(geo.nbvox): # colonnes de l'image
         print("working on image column: "+str(j+1)+"/"+str(geo.nbvox))
-
-        # Rajouté par Thomas le 4 mars 2025
-        x = (j-0.5*(geo.nbvox-1))*geo.voxsize
         
         for i in range(geo.nbvox): # lignes de l'image
-
-            # Rajouté par Thomas le 4 mars 2025
-            y = (i-0.5*(geo.nbvox-1))*geo.voxsize
-            r = np.sqrt(x**2+y**2)
-            phi = np.arctan2(y, x)
 
             for a in range(len(angles)):
                 #votre code ici...
@@ -71,13 +63,6 @@ def laminogram():
                 #le pixel le plus proche ou interpoler linéairement...Rappel, le centre
                 #du détecteur est toujours aligné avec le centre de la grille de
                 #reconstruction peu importe l'angle.
-
-                # Rajouté par Thomas le 4 mars 2025
-                d = r*np.cos(phi-angles[a]) 
-                nb_pixels = d//geo.pixsize
-                pixel = int(geo.nbpix/2+nb_pixels)
-                image[i][-j] += sinogram[a][pixel] #Pourquoi le - est nécessaire pour avoir une image droite?
-                # Fin de ce que j'ai rajouté    
 
     util.saveImage(image, "lam")
 
@@ -99,24 +84,13 @@ def backproject():
     for j in range(geo.nbvox): # colonnes de l'image
         print("working on image column: "+str(j+1)+"/"+str(geo.nbvox))
 
-        x = (j-0.5*(geo.nbvox-1))*geo.voxsize
-
         for i in range(geo.nbvox): # lignes de l'image
-
-            y = (i-0.5*(geo.nbvox-1))*geo.voxsize
-            r = np.sqrt(x**2+y**2)
-            phi = np.arctan2(y, x)
 
             for a in range(len(angles)):
                 #votre code ici
                #pas mal la même chose que prédédemment
             #mais avec un sinogramme qui aura été préalablement filtré
-
-                d = r*np.cos(phi-angles[a])
-                nb_pixels = d//geo.pixsize
-                pixel = int(geo.nbpix/2+nb_pixels)
-                image[i][-j] += sinogram[a][pixel] #Pourquoi le - est nécessaire pour avoir une image droite?
-
+            
     util.saveImage(image, "fbp")
 
 ## reconstruire une image TDM en mode retroprojection
