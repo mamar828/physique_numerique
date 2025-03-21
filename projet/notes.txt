@@ -1,0 +1,19 @@
+Juste pour vous expliciter une idée que j'ai pour le projet pour qu'on aie une référence (c'est vraiment juste une suggestion, je suis curieux de voir à quoi vous avez pensé) :
+
+On pourrait faire une exploration des techniques de régression de spectre (intensité de la lumière pour différentes longueurs d'onde), utilisé surtout en astrophysique. En gros l'enjeu c'est que pour des spectres avec une bonne résolution, mais beaucoup de bruit, ça peut être très difficile de distinguer les raies de différents éléments lorsque celles-ci sont très rapprochées. Distinguer les raies est très important si on veut extraire le comportement d'un élément en particulier qui émet à une longueur d'onde voisine à un autre (par exemple, l'émission de l'azote ionisé une fois est très près de celle de raies d'OH dans l'atmosphère, et il faut pouvoir isoler la composante qui correspond à l'azote pour l'analyser convenablement). Cependant, c'est très dépendant de l'algorithme, et celui-ci peut converger à des solutions non désirées.
+
+On pourrait ainsi tester différentes méthodes d'ajustement :
+- régression classique avec scipy.curve_fit et se faire un code pour trouver des estimations initiales 
+- régression avec une librairie plus robuste (specutils) et tester différents algorithmes pour fit (LinearLSQFitter, LMLSQFitter, SimplexLSQFitter, etc.), en utilisant le même algorithme pour les estimations initiales
+- réseau de neurones convolutionnel (CNN) auquel on fournit un ensemble de données artificiel pour l'entrainer et on teste la performance sur un autre dataset
+- réseau de neurones pleinement connecté (FCNN) avec la même approche que le réseau précédent
+- autres méthodes style régression linéaire bayésienne
+- la librairie GaussPy offre également une approche style machine learning il me semble, on pourrait donc l'explorer aussi
+- on peut probablement trouver des algorithmes encore plus spécialisés dans des articles
+
+- machine learning pour estimations initiales ?
+- donner un cube de données pour du machine learning tout d'un coup ?
+
+On pourrait utiliser différents types de spectres artificiels pour tester la précision de chaque méthode, et vu qu'il s'agit de spectres qu'on génère, il sera facile d'évaluer la proximité de notre algorithme avec les vraies raies. En se basant sur une certaine mesure d'exactitude, on pourrait facilement évaluer la performance de chaque méthode.
+
+On pourrait aussi facilement ajouter ou retirer des méthodes selon le temps disponible. Je pense que ça marcherait bien dans le cours vu que ça rajoute de la profondeur aux méthodes de régression qu'on voit typiquement. Dites-moi ce que vous en pensez !

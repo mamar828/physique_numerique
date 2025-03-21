@@ -1,3 +1,6 @@
+from graphinglib import Figure
+
+
 def format_time(total_seconds: float, precision: int=2) -> str:
     """
     Format a given time in seconds into a human-readable string. An example of the output format is "13h05m06.23s".
@@ -30,3 +33,16 @@ def format_time(total_seconds: float, precision: int=2) -> str:
     else:
         end_str += f"{seconds:.{precision}f}s"
     return end_str
+
+def show_plot(plottables: list) -> None:
+    """
+    Automatically plots the given plottables and shows the figure.
+
+    Parameters
+    ----------
+    plottables : list
+        The list of plottables to plot.
+    """
+    fig = Figure()
+    fig.add_elements(*plottables)
+    fig.show()
