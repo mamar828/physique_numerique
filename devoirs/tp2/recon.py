@@ -63,6 +63,7 @@ def laminogram():
                 #le pixel le plus proche ou interpoler linéairement...Rappel, le centre
                 #du détecteur est toujours aligné avec le centre de la grille de
                 #reconstruction peu importe l'angle.
+                pass
 
     util.saveImage(image, "lam")
 
@@ -88,8 +89,9 @@ def backproject():
 
             for a in range(len(angles)):
                 #votre code ici
-               #pas mal la même chose que prédédemment
-            #mais avec un sinogramme qui aura été préalablement filtré
+                #pas mal la même chose que prédédemment
+                #mais avec un sinogramme qui aura été préalablement filtré
+                pass
             
     util.saveImage(image, "fbp")
 
