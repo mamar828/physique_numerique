@@ -19,7 +19,7 @@ def readInput(dir: str = geo.dataDir,
               filename: str = geo.sinogramFile,
               ):
     # lire les angles
-    [nbprj, angles] = util.readAngles(dir+filename)
+    [nbprj, angles] = util.readAngles(dir+geo.anglesFile)
 
     # print("nbprj:",nbprj)
     # print("angles min and max (rad):")
