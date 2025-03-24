@@ -15,16 +15,18 @@ import devoirs.tp2.util as util
 import devoirs.tp2.CTfilter as CTfilter
 
 ## créer l'ensemble de données d'entrée à partir des fichiers
-def readInput():
+def readInput(dir: str = geo.dataDir,
+              filename: str = geo.anglesFile,
+              ):
     # lire les angles
-    [nbprj, angles] = util.readAngles(geo.dataDir+geo.anglesFile)
+    [nbprj, angles] = util.readAngles(dir+filename)
 
     # print("nbprj:",nbprj)
     # print("angles min and max (rad):")
     # print("["+str(np.min(angles))+", "+str(np.max(angles))+"]")
 
     # lire le sinogramme
-    [nbprj2, nbpix2, sinogram] = util.readSinogram(geo.dataDir+geo.sinogramFile)
+    [nbprj2, nbpix2, sinogram] = util.readSinogram(dir+filename)
 
     if nbprj != nbprj2:
         print("angles file and sinogram file conflict, aborting!")
