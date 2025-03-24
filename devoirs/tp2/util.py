@@ -38,8 +38,9 @@ def readSinogram(filename):
 
 #enregistrer l'image
 def saveImage(image, prefix):
+    plt.clf()
     im = plt.imshow(image, cmap = cm.Greys_r)
     plt.colorbar()
     plt.title("Méthode: "+prefix)
     plt.savefig(prefix+"-"+time.strftime("%Y%m%d-%H%M%S")+".png")
-    # plt.show()
+    plt.show()
