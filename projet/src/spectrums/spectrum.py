@@ -7,7 +7,6 @@ from os.path import isfile
 from eztcolors import Colors as C
 
 from projet.src.models.custom_model import CustomModel
-from projet.src.models.custom_gaussian import CustomGaussian
 
 
 class Spectrum:
@@ -97,7 +96,7 @@ class Spectrum:
 
         return [Curve(x, data, color="black"), *plottables]
 
-    def evaluate(self, n: int) -> np.ndarray:
+    def evaluate(self, n: int) -> tuple[np.ndarray, np.ndarray]:
         """
         Evaluates n times the spectrum at the given x. This uses the evaluate method of each model in the spectrum,
         which randomly samples the parameters from the model's parameter distribution.
@@ -109,19 +108,23 @@ class Spectrum:
 
         Returns
         -------
-        np.ndarray
-            The evaluated models at x.
+        tuple[np.ndarray, np.ndarray]
+            The evaluated models at x and the parameters used to evaluate the models. The first array is the sum of all
+            the models' data and the second array is the concatenated parameters of each model.
         """
         x = np.tile(np.arange(self.number_of_channels) + 1, (n, 1))     # first channel starts at 1
+        params = np.empty((n, 0))
 
         # Create noisy base data
         data = np.random.normal(0, self.noise_sigma, (n, self.number_of_channels))
 
         # Add each model's contribution
         for model in self.models:
-            data += model.evaluate(x)
+            model_data, model_params = model.evaluate(x)
+            data += model_data
+            params = np.hstack((params, model_params))
         
-        return data
+        return data, params
 
     def save(self, filename: str):
         """

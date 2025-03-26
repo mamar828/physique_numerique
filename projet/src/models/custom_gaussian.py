@@ -118,7 +118,7 @@ class CustomGaussian(CustomModel):
 
         return plottables
 
-    def evaluate(self, x: np.ndarray) -> np.ndarray:
+    def evaluate(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """
         Evaluates the model at the given x. If the model has variable parameters, the parameters are randomly chosen
         from a random distribution whose standard deviation is one third of the difference between a bound and the
@@ -133,9 +133,11 @@ class CustomGaussian(CustomModel):
 
         Returns
         -------
-        np.ndarray
-            The evaluated models at x. The returned array has shape (n, m) where n is the number of evaluations and m is
-            the number of channels.
+        tuple[np.ndarray, np.ndarray]
+            The evaluated models at x and the corresponding parameters used for generation. The first array has shape
+            (n, m) where n is the number of evaluations and m is the number of channels. The second array has shape 
+            (n, 3) where n is the number of evaluations and the columns are the amplitude, mean, and standard deviation
+            of each gaussian.
         """
         if x.ndim == 1:
             x = x[:, None]
@@ -151,4 +153,4 @@ class CustomGaussian(CustomModel):
         )
         amplitude, mean, stddev = params.T[:,:,None]
 
-        return amplitude * np.exp(- (x - mean) ** 2 / (2 * stddev ** 2))
+        return amplitude * np.exp(- (x - mean) ** 2 / (2 * stddev ** 2)), params

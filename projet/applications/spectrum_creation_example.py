@@ -18,13 +18,19 @@ spec = Spectrum(
     100,
     0.1
 )
-# show_plot(spec.plot)
+show_plot(spec.plot)
 
 # Evaluate the Spectrum for 5 spectra and plot the first one
-vals = spec.evaluate(5)
+vals, params = spec.evaluate(5)
+
 fig = gl.Figure()
 fig.add_elements(gl.Curve(np.arange(100) + 1, vals[0]))
-# fig.show()
+fig.show()
+
+# Plot the evaluated spectrum with the specific gaussians used to generate it
+for model_params in params[0].reshape(-1, 3):
+    fig.add_elements(CustomGaussian(*model_params).get_plot(100)[0])
+fig.show()
 
 # Save the Spectrum to a file and load it back
 # spec.save("projet/data/spectrum.txt")
