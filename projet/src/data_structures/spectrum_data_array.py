@@ -16,7 +16,7 @@ class SpectrumDataArray:
         Parameters
         ----------
         data : np.ndarray
-            A size (m, n) numpy array containing m spectra with n channels each.
+            A size (n,m) numpy array containing n spectra with m channels each.
         """
         self.data = data
 

@@ -51,24 +51,26 @@ class CustomModel(Protocol):
         """
         raise NotImplementedError
 
-    def evaluate(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def evaluate(self, x: np.ndarray, n: int) -> tuple[np.ndarray, np.ndarray]:
         """
-        Evaluates the model at the given x. If the model has variable parameters, the parameters are randomly chosen
-        from a random distribution whose standard deviation is one third of the difference between a bound and the
-        parameter's average (one sixth of the difference between the upper and lower bounds). The number of evaluations
-        is the same as the number of rows in x.
+        Evaluates the model at the given x, n times. If the model has variable parameters, the parameters are randomly
+        chosen from a random distribution whose standard deviation is one third of the difference between a bound and
+        the parameter's average (one sixth of the difference between the upper and lower bounds). The number of
+        evaluations is the same as the number of rows in x.
 
         Parameters
         ----------
         x : np.ndarray
-            The x values to evaluate the models at. This must be a 2D array with shape (n, m) where n is the number of
-            evaluations and m is the number of channels.
+            The x values to evaluate the models at. This is a 1D array with shape (m,) where m is the number of
+            channels.
+        n : int
+            The number of times to evaluate the model.
 
         Returns
         -------
         tuple[np.ndarray, np.ndarray]
             The evaluated models at x and the corresponding parameters used for generation. The first array has shape
-            (n, m) where n is the number of evaluations and m is the number of channels. The second array has shape 
-            (n, k) where n is the number of evaluations and k is the number of parameters the model has.
+            (n,m) where n is the number of evaluations and m is the number of channels. The second array has shape (n,k)
+            where n is the number of evaluations and k is the number of parameters the model has.
         """
         raise NotImplementedError

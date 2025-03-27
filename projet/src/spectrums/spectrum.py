@@ -112,7 +112,7 @@ class Spectrum:
             The evaluated models at x and the parameters used to evaluate the models. The first array is the sum of all
             the models' data and the second array is the concatenated parameters of each model.
         """
-        x = np.tile(np.arange(self.number_of_channels) + 1, (n, 1))     # first channel starts at 1
+        x = np.arange(self.number_of_channels) + 1     # first channel starts at 1
         params = np.empty((n, 0))
 
         # Create noisy base data
@@ -120,7 +120,7 @@ class Spectrum:
 
         # Add each model's contribution
         for model in self.models:
-            model_data, model_params = model.evaluate(x)
+            model_data, model_params = model.evaluate(x, n)
             data += model_data
             params = np.hstack((params, model_params))
         
