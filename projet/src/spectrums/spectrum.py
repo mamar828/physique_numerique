@@ -45,6 +45,31 @@ class Spectrum:
         return f"Spectrum with {len(self.models)} models, {self.number_of_channels} channels and a noise with a " \
                f"{self.noise_sigma} sigma."
     
+    def __call__(self, x: np.ndarray, *model_parameters: float | np.ndarray) -> np.ndarray:
+        """
+        Evaluates the Spectrum object at given x.
+
+        Parameters
+        ----------
+        x : np.ndarray
+            The x value to evaluate the Spectrum object.
+        model_parameters : float | np.ndarray
+            Additional arguments to pass to each model containing the spectrum. If floats are given, each value
+            corresponds to a model parameter, in the order Amp1, mean1, stddev1, Amp2, mean2, stddev2, ... If an array
+            is given, the shape is (j,k) where j is the number of models and k is the number of parameters per model.
+
+        Returns
+        -------
+        np.ndarray
+            The evaluated Spectrum object at x.
+        """
+        data = np.zeros(len(x))
+        if not isinstance(model_parameters, np.ndarray):
+            model_parameters = np.array(model_parameters).reshape((len(self.models), -1))
+        for model, params in zip(self.models, model_parameters):
+            data += model(x, *params)
+        return data
+
     @staticmethod
     def load(filename: str) -> Self:
         """
@@ -112,7 +137,8 @@ class Spectrum:
         tuple[np.ndarray, np.ndarray]
             The evaluated models at x and the parameters used to evaluate the models. The first array has the shape 
             (n,m) where n is the number of evaluations and m is the number of channels. The second array has the shape
-            (n,j,k) where j is the number of models and k is the number of parameters of each model.
+            (n,j,k) where n is the number of spectra, j is the number of models and k is the number of parameters in
+            each model.
         """
         x = np.arange(self.number_of_channels) + 1     # first channel starts at 1
         params = np.empty((n, self.models[0].number_of_parameters, 0))

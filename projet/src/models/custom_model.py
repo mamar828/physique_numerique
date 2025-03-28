@@ -10,7 +10,7 @@ class CustomModel(Protocol):
     """
     number_of_parameters: int
     
-    def __call__(self, x: np.ndarray) -> np.ndarray:
+    def __call__(self, x: np.ndarray, *args: float) -> np.ndarray:
         """
         Evaluates the CustomModel object at a given x. The average parameters are used to evaluate the model.
 
@@ -18,6 +18,8 @@ class CustomModel(Protocol):
         ----------
         x : np.ndarray
             The x value to evaluate the CustomModel object.
+        args: float
+            The parameters of the model.
 
         Returns
         -------

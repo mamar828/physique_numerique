@@ -9,7 +9,7 @@ class CustomGaussian(CustomModel):
     """
     This class implements a custom Gaussian model, which can have lower and upper limits on each of its parameters.
     """
-    number_of_parameters: int=3
+    number_of_parameters: int = 3
 
     def __init__(
             self,
@@ -36,21 +36,37 @@ class CustomGaussian(CustomModel):
         self.mean = mean
         self.stddev = stddev
 
-    def __call__(self, x: np.ndarray) -> np.ndarray:
+    def __call__(
+            self,
+            x: np.ndarray,
+            amplitude: float=None,
+            mean: float=None,
+            stddev: float=None
+    ) -> np.ndarray:
         """
-        Evaluates the CustomGaussian object at a given x. The average parameters are used to evaluate the Gaussian.
+        Evaluates the CustomGaussian object at a given x.
 
         Parameters
         ----------
         x : np.ndarray
             The x value to evaluate the CustomGaussian object.
+        amplitude : float, optional
+            The amplitude of the Gaussian. Defaults to the average amplitude if None.
+        mean : float, optional
+            The mean of the Gaussian. Defaults to the average mean if None.
+        stddev : float, optional
+            The standard deviation of the Gaussian. Defaults to the average standard deviation if None.
 
         Returns
         -------
         np.ndarray
             The evaluated CustomGaussian object at x.
         """
-        return Gaussian1D(self.avg_amplitude, self.avg_mean, self.avg_stddev)(x)
+        return Gaussian1D(
+            amplitude if amplitude is not None else self.avg_amplitude,
+            mean if mean is not None else self.avg_mean,
+            stddev if stddev is not None else self.avg_stddev
+        )(x)
 
     def __str__(self) -> str:
         """
