@@ -27,7 +27,8 @@ class Spectrum:
         Parameters
         ----------
         models : list[CustomModel]
-            The list of models to create the spectrum.
+            The list of models to create the spectrum. Spectrums containing different types of CustomModels are not
+            supported.
         number_of_channels : int
             The number of channels to create the spectrum. Note that the channels are indexed starting from 1.
         noise_sigma : float, default=0
@@ -109,11 +110,12 @@ class Spectrum:
         Returns
         -------
         tuple[np.ndarray, np.ndarray]
-            The evaluated models at x and the parameters used to evaluate the models. The first array is the sum of all
-            the models' data and the second array is the concatenated parameters of each model.
+            The evaluated models at x and the parameters used to evaluate the models. The first array has the shape 
+            (n,m) where n is the number of evaluations and m is the number of channels. The second array has the shape
+            (n,j,k) where j is the number of models and k is the number of parameters of each model.
         """
         x = np.arange(self.number_of_channels) + 1     # first channel starts at 1
-        params = np.empty((n, 0))
+        params = np.empty((n, self.models[0].number_of_parameters, 0))
 
         # Create noisy base data
         data = np.random.normal(0, self.noise_sigma, (n, self.number_of_channels))
@@ -122,8 +124,10 @@ class Spectrum:
         for model in self.models:
             model_data, model_params = model.evaluate(x, n)
             data += model_data
-            params = np.hstack((params, model_params))
-        
+            params = np.dstack((params, model_params))
+
+        # params is currently a (n,k,j) array, we need to transpose it to (n,j,k)
+        params = np.swapaxes(params, 1, 2)
         return data, params
 
     def save(self, filename: str):

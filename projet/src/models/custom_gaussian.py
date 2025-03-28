@@ -9,6 +9,7 @@ class CustomGaussian(CustomModel):
     """
     This class implements a custom Gaussian model, which can have lower and upper limits on each of its parameters.
     """
+    number_of_parameters: int=3
 
     def __init__(
             self,

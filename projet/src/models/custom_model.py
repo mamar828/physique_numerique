@@ -8,6 +8,7 @@ class CustomModel(Protocol):
     """
     This class implements a base CustomModel class used for type hinting.
     """
+    number_of_parameters: int
     
     def __call__(self, x: np.ndarray) -> np.ndarray:
         """
