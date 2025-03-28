@@ -4,7 +4,8 @@ import scipy as sp
 
 def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
     """
-    Finds gaussian initial guesses using a find_peaks algorithm.
+    Finds gaussian initial guesses using a find_peaks algorithm. The parameters should be chosen so the same number of
+    peaks are detected in each spectrum.
 
     Parameters
     ----------

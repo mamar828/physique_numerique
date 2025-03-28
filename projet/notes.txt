@@ -17,3 +17,9 @@ On pourrait ainsi tester différentes méthodes d'ajustement :
 On pourrait utiliser différents types de spectres artificiels pour tester la précision de chaque méthode, et vu qu'il s'agit de spectres qu'on génère, il sera facile d'évaluer la proximité de notre algorithme avec les vraies raies. En se basant sur une certaine mesure d'exactitude, on pourrait facilement évaluer la performance de chaque méthode.
 
 On pourrait aussi facilement ajouter ou retirer des méthodes selon le temps disponible. Je pense que ça marcherait bien dans le cours vu que ça rajoute de la profondeur aux méthodes de régression qu'on voit typiquement. Dites-moi ce que vous en pensez !
+
+
+Since you’re implementing a deterministic least squares approach, you can compare models in three ways:
+	•	Performance on synthetic spectra where ground truth parameters are known.
+	•	Ability to generalize to real spectra.
+	•	Computational efficiency.
