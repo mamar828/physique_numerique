@@ -1,0 +1,14 @@
+Spectrum with 7 models, 100 channels and a noise with a 0 sigma.
+Spectrum(
+	models=[
+		CustomGaussian(amplitude=(5, 10), mean=(20, 22), stddev=(0.1, 0.5)),
+		CustomGaussian(amplitude=(6, 8), mean=(29, 31), stddev=(0.1, 0.3)),
+		CustomGaussian(amplitude=(2, 3), mean=(39, 41), stddev=(0.2, 0.4)),
+		CustomGaussian(amplitude=(1, 2), mean=(55, 57), stddev=(0.1, 0.2)),
+		CustomGaussian(amplitude=(1, 2), mean=(58, 60), stddev=(0.1, 0.2)),
+		CustomGaussian(amplitude=(3, 5), mean=(75, 77), stddev=(0.1, 0.3)),
+		CustomGaussian(amplitude=(5, 9), mean=(90, 94), stddev=(0.2, 0.5))
+	],
+	number_of_channels=100,
+	noise_sigma=0
+)
