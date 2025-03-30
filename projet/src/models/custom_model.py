@@ -33,6 +33,13 @@ class CustomModel(Protocol):
         Gives a string representation of the CustomModel object.
         """
         raise NotImplementedError
+    
+    @property
+    def avg_mean(self) -> float:
+        """
+        Gives the average mean value.
+        """
+        raise NotImplementedError
 
     def get_plot(self, number_of_channels: int, color: str=None) -> list[Curve | Scatter | Line]:
         """

@@ -7,6 +7,7 @@ from os.path import isfile
 from eztcolors import Colors as C
 
 from projet.src.models.custom_model import CustomModel
+from projet.src.models.custom_gaussian import CustomGaussian     # needed for the load method
 
 
 class Spectrum:
@@ -109,16 +110,18 @@ class Spectrum:
 
         # Applying Gaussian noise to the data
         data += random.normal(0, self.noise_sigma, self.number_of_channels)
-        plottables.append(
-            Line(
-                [1, -self.noise_sigma*3], 
-                [1, self.noise_sigma*3],
-                color="gray",
-                width=2,
-                capped_line=True,
-                cap_width=0.3
-            )
-        )
+        if self.noise_sigma > 0:
+            plottables += [
+                Line(
+                    [1, -self.noise_sigma*3], 
+                    [1, self.noise_sigma*3],
+                    color="gray",
+                    width=2,
+                    capped_line=True,
+                    cap_width=0.3
+                ),
+                Scatter(1, -self.noise_sigma*3, marker_size=0)      # make sure that the ax is resized to fit the line
+            ]
 
         return [Curve(x, data, color="black"), *plottables]
 
@@ -170,6 +173,6 @@ class Spectrum:
         with open(filename, "w") as f:
             print(self, file=f)
             f.write(f"{self.__class__.__name__}(\n\tmodels=[\n\t\t")
-            f.write(",\n\t\t".join([str(model) for model in self.models]))
+            f.write(",\n\t\t".join([str(model) for model in sorted(self.models, key=lambda m: m.avg_mean)]))
             f.write(f"\n\t],\n\tnumber_of_channels={self.number_of_channels},")
             f.write(f"\n\tnoise_sigma={self.noise_sigma}\n)")
