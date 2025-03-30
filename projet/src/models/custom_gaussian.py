@@ -167,6 +167,9 @@ class CustomGaussian(CustomModel):
             ],
             size=(n, 3)
         )
+        # Clip all negative values to 0
+        params = np.clip(params, a_min=0, a_max=None)
+
         amplitude, mean, stddev = params.T[:,:,None]
 
         return amplitude * np.exp(- (x - mean) ** 2 / (2 * stddev ** 2)), params

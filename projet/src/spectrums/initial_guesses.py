@@ -21,6 +21,7 @@ def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
         number of evaluations, j is the number of models and the columns are the estimated amplitude, mean and stddev of
         the Gaussian model.
     """
+    # TODO : make it so this works with a variable number of detected peaks, maybe padding ?
     peak_means = np.array([sp.signal.find_peaks(spectrum, **kwargs)[0] for spectrum in data])
     peak_amplitudes = np.array([spectrum[peaks] for spectrum, peaks in zip(data, peak_means)])
 
