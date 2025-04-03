@@ -38,6 +38,7 @@ class Spectrum:
         self.models = models
         self.number_of_channels = number_of_channels
         self.noise_sigma = noise_sigma
+        self.x_values = np.arange(self.number_of_channels) + 1     # first channel starts at 1
 
     def __str__(self) -> str:
         """
@@ -45,7 +46,7 @@ class Spectrum:
         """
         return f"Spectrum with {len(self.models)} models, {self.number_of_channels} channels and a noise with a " \
                f"{self.noise_sigma} sigma."
-    
+
     def __call__(self, x: np.ndarray, *model_parameters: float | np.ndarray) -> np.ndarray:
         """
         Evaluates the Spectrum object at given x.
@@ -90,7 +91,7 @@ class Spectrum:
             code = "".join(f.readlines()[1:])
             
         return eval(code)
-
+    
     @property
     def plot(self) -> list[Curve | Scatter | Line]:
         """
@@ -101,11 +102,10 @@ class Spectrum:
         list[Curve | Scatter | Line]
             The plot of the spectrum.
         """
-        x = np.arange(self.number_of_channels) + 1       # first channel starts at 1
         data = np.zeros(self.number_of_channels)
         plottables = []
         for model, color in zip(self.models, cycle(get_colors())):
-            data += model(x)
+            data += model(self.x_values)
             plottables.extend(model.get_plot(self.number_of_channels, color))
 
         # Applying Gaussian noise to the data
@@ -123,7 +123,7 @@ class Spectrum:
                 Scatter(1, -self.noise_sigma*3, marker_size=0)      # make sure that the ax is resized to fit the line
             ]
 
-        return [Curve(x, data, color="black"), *plottables]
+        return [Curve(self.x_values, data, color="black"), *plottables]
 
     def evaluate(self, n: int) -> tuple[np.ndarray, np.ndarray]:
         """
@@ -143,7 +143,6 @@ class Spectrum:
             (n,j,k) where n is the number of spectra, j is the number of models and k is the number of parameters in
             each model.
         """
-        x = np.arange(self.number_of_channels) + 1     # first channel starts at 1
         params = np.empty((n, self.models[0].number_of_parameters, 0))
 
         # Create noisy base data
@@ -151,7 +150,7 @@ class Spectrum:
 
         # Add each model's contribution
         for model in self.models:
-            model_data, model_params = model.evaluate(x, n)
+            model_data, model_params = model.evaluate(self.x_values, n)
             data += model_data
             params = np.dstack((params, model_params))
 
