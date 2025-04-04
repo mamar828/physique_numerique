@@ -12,7 +12,7 @@ spec = Spectrum(
     [
         CustomGaussian((7,10), (20,22), (0.1,0.4)),
         CustomGaussian((2,5), (20,22), (1,5)),
-        CustomGaussian((4,7), (70,75), (0.2,0.6)),
+        CustomGaussian((4,7), (70,75), (0.2,1)),
         CustomGaussian((1,3), (70,75), (3,7)),
     ],
     100,
