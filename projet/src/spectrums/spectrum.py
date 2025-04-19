@@ -59,6 +59,7 @@ class Spectrum:
             Additional arguments to pass to each model containing the spectrum. If floats are given, each value
             corresponds to a model parameter, in the order Amp1, mean1, stddev1, Amp2, mean2, stddev2, ... If an array
             is given, the shape is (j,k) where j is the number of models and k is the number of parameters per model.
+            If no values are given, the average values of each model are used.
 
         Returns
         -------

@@ -34,7 +34,7 @@ def format_time(total_seconds: float, precision: int=2) -> str:
         end_str += f"{seconds:.{precision}f}s"
     return end_str
 
-def show_plot(plottables: list) -> None:
+def show_plot(*plottables: list) -> None:
     """
     Automatically plots the given plottables and shows the figure.
 
