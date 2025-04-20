@@ -20,7 +20,7 @@ def mean_squared_error(fitted_params: np.ndarray, true_params: np.ndarray) -> fl
     float
         The mean squared error between the parameters.
     """
-    return np.mean((fitted_params - true_params) ** 2)
+    return np.nanmean((fitted_params - true_params) ** 2)
 
 def mean_r2_score(fitted_params: np.ndarray, data_array: SpectrumDataArray) -> float:
     """

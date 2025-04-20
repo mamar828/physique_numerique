@@ -23,3 +23,8 @@ Since you’re implementing a deterministic least squares approach, you can comp
 	•	Performance on synthetic spectra where ground truth parameters are known.
 	•	Ability to generalize to real spectra.
 	•	Computational efficiency.
+
+
+
+TODO :
+- Expérimenter avec plusieurs métriques pour voir la meilleure, peut-être trouver en ligne des sources pour appuyer nos choix ? De ce que j'ai vu, le r2_score semble le plus adapté pour nous, même si ce n'est pas toujours super représentatif. Au moins il s'interprète bien. Voir : https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics
