@@ -45,7 +45,7 @@ def init(*args):
 
 
 def decompose_one(i):
-    print("   ---->  ", i)
+    # print("   ---->  ", i)
     result = GaussianDecomposer.decompose(
         agd_object,
         agd_data["x_values"][i],

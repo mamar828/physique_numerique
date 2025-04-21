@@ -62,7 +62,7 @@ class GausspyFitter:
         pickle.dump(gp_data, open(filename, "wb"))
 
     @notify_function_end
-    def train_alpha(self, alpha_initial: float=1, snr_threshold: float=3, **kwargs) -> float:
+    def train_alpha(self, alpha_initial: float=1, snr_threshold: float=3, learning_rate: float=0.1, **kwargs) -> float:
         """
         Trains the smoothing parameter alpha using known underlying gaussian decompositions from the training data
         array.
@@ -74,6 +74,9 @@ class GausspyFitter:
         snr_threshold : float, default=5
             The signal-to-noise ratio threshold to use for the AGD algorithm. This parameter is used to determine the
             minimum amplitude of the peaks to be considered.
+        learning_rate : float, default=0.1
+            The learning rate to use for the AGD algorithm. This parameter controls the step size in the optimization
+            process.
         kwargs
             Additional arguments to pass to the AGD algorithm. These can include parameters such as the maximum number
             of iterations, convergence tolerance, etc.
@@ -90,9 +93,11 @@ class GausspyFitter:
         decomposer = gp.GaussianDecomposer()
         decomposer.load_training_data("projet/data/gausspy/training_data.pkl")
         decomposer.set("phase", "one")
+        # decomposer.set("phase", "two")
         decomposer.set("SNR_thresh", [snr_threshold, snr_threshold])
-        decomposer.train(alpha1_initial=alpha_initial, **kwargs, verbose=False)
-        return decomposer.p["alpha1"]
+        decomposer.train(alpha1_initial=alpha_initial, learning_rate=learning_rate, **kwargs)
+        # return decomposer.p["alpha1"]
+        return decomposer.p["alpha1"], decomposer.p["alpha2"]
 
     def fit(self, alpha: float, snr_threshold: float=3) -> np.ndarray:
         """
