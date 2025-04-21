@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 
-from projet.src.tools.array import list_to_array
+from projet.src.tools.array_functions import list_to_array
 
 
 def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:

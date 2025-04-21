@@ -4,7 +4,7 @@ import pickle
 import projet.src.fitters.gausspy_lib.gp as gp
 from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
 from projet.src.tools.messaging import notify_function_end
-from projet.src.tools.array import list_to_array
+from projet.src.tools.array_functions import list_to_array
 
 
 class GausspyFitter:
