@@ -1,6 +1,8 @@
 import numpy as np
 import scipy as sp
 
+from projet.src.tools.array import list_to_array
+
 
 def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
     """
@@ -23,15 +25,8 @@ def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
     """
     peak_means = [sp.signal.find_peaks(spectrum, **kwargs)[0] for spectrum in data]
     peak_amplitudes = [spectrum[peaks] for spectrum, peaks in zip(data, peak_means)]
-    max_length = max(len(peaks) for peaks in peak_means)
-    peak_means = np.array(
-        [np.pad(means.astype(float), (0, max_length - len(means)), constant_values=np.nan) 
-         for means in peak_means]
-    )
-    peak_amplitudes = np.array(
-        [np.pad(amplitudes.astype(float), (0, max_length - len(amplitudes)), constant_values=np.nan)
-         for amplitudes in peak_amplitudes]
-    )
+    peak_means = list_to_array(peak_means)
+    peak_amplitudes = list_to_array(peak_amplitudes)
 
     # Estimate stddevs
     peak_stddevs = []
