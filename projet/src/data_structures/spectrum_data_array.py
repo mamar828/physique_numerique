@@ -28,6 +28,12 @@ class SpectrumDataArray:
         self.params = params
         self.spectrum = spectrum
 
+    def __len__(self) -> int:
+        """
+        Returns the number of spectra in the SpectrumDataArray object.
+        """
+        return self.data.shape[0]
+
     @classmethod
     def generate_from_spectrum(cls, spectrum: Spectrum, n_spectra: int) -> Self:
         """

@@ -12,12 +12,12 @@ from projet.src.fitters.scipy_fitter import ScipyFitter
 from projet.src.fitters.score import *
 
 
-spec = Spectrum.load("projet/data/distinct_gaussians/very_noisy.txt")
+spec = Spectrum.load("projet/data/spectra/distinct_gaussians/very_noisy.txt")
 # show_plot(spec.plot)
 
 np.random.seed(0)
 
-data_array = SpectrumDataArray.generate_from_spectrum(spec, 10000)
+data_array = SpectrumDataArray.generate_from_spectrum(spec, 1000)
 sf = ScipyFitter(data_array)
 # estimates = find_peaks_gaussian_estimates(data_array.data, prominence=2)
 estimates = find_peaks_gaussian_estimates(data_array.data, prominence=3, height=3, width=5, distance=10)
@@ -25,5 +25,4 @@ fits = sf.fit(estimates)
 
 # show_fit_plot(data_array, fits)
 
-# print(mean_squared_error(fits, data_array.params))
 print(mean_r2_score(fits, data_array))

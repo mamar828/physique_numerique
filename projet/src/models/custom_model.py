@@ -34,6 +34,12 @@ class CustomModel(Protocol):
         """
         raise NotImplementedError
     
+    def __len__(self) -> int:
+        """
+        Gives the number of parameters of the CustomModel object.
+        """
+        raise NotImplementedError
+
     @property
     def avg_mean(self) -> float:
         """

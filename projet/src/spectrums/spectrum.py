@@ -13,7 +13,7 @@ from projet.src.models.custom_gaussian import CustomGaussian     # needed for th
 class Spectrum:
     """
     This class implements a spectrum created from models and may be given to a SpectrumDataArray or SpectrumDataset to
-    generate corresponding data.
+    generate corresponding data. Only models with the same number of parameters in a Spectrum are currently supported.
     """
 
     def __init__(
@@ -69,7 +69,7 @@ class Spectrum:
         """
         data = np.zeros(len(x))
         if not isinstance(model_parameters, np.ndarray):
-            model_parameters = np.array(model_parameters).reshape((len(self.models), -1))
+            model_parameters = np.array(model_parameters).reshape((-1, len(self.models[0])))
         for model, params in zip(self.models, model_parameters):
             if not np.isnan(params).any():
                 data += model(x, *params)

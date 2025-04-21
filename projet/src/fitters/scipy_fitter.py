@@ -22,7 +22,7 @@ class ScipyFitter:
         """
         self.data_array = data_array
 
-    def fit(self, initial_guesses: np.ndarray) -> tuple[np.ndarray]:
+    def fit(self, initial_guesses: np.ndarray) -> np.ndarray:
         """
         Fits the data array using scipy.signal.find_peaks and given initial guesses. This method uses multiprocessing
         with pathos and optimized data handling.
@@ -35,7 +35,7 @@ class ScipyFitter:
 
         Returns
         -------
-        tuple[np.ndarray]
+        np.ndarray
             The fitted parameters of the model, given in the same shape as the initial guesses.
         """
         x_values = np.arange(self.data_array.data.shape[1]) + 1
