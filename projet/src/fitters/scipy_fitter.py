@@ -22,7 +22,7 @@ class ScipyFitter:
         """
         self.data_array = data_array
 
-    def fit(self, initial_guesses: np.ndarray) -> tuple[np.ndarray]:
+    def fit(self, initial_guesses: np.ndarray) -> np.ndarray:
         """
         Fits the data array using scipy.signal.find_peaks and given initial guesses. This method uses multiprocessing
         with pathos and optimized data handling.
@@ -35,20 +35,31 @@ class ScipyFitter:
 
         Returns
         -------
-        tuple[np.ndarray]
+        np.ndarray
             The fitted parameters of the model, given in the same shape as the initial guesses.
         """
         x_values = np.arange(self.data_array.data.shape[1]) + 1
 
         def worker_fit_single_spectrum(spectrum, guesses):
+            # Filter out invalid guesses (rows with np.nan)
+            valid_guesses = guesses[~np.isnan(guesses).any(axis=1)]
+            if valid_guesses.size == 0:
+                # Return NaNs if no valid guesses are available
+                return np.full(guesses.size, np.nan)
+
+            # Flatten valid guesses and fit
             params = sp.optimize.curve_fit(
-                f=self.data_array.spectrum,
+                f=self.data_array.spectrum[:valid_guesses.shape[0]],
                 xdata=x_values,
                 ydata=spectrum,
-                p0=guesses.flatten(),
+                p0=valid_guesses.flatten(),
                 maxfev=10000
             )[0]
-            return params
+
+            # Reshape to match the original guesses' shape
+            result = np.full(guesses.size, np.nan)
+            result[:params.size] = params.flatten()
+            return result
 
         # Pre-pack the arguments to avoid repeated zip overhead
         packed_arguments = [(spectrum, guesses) for spectrum, guesses in zip(self.data_array.data, initial_guesses)]

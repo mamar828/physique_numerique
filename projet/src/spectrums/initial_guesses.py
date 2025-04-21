@@ -1,6 +1,8 @@
 import numpy as np
 import scipy as sp
 
+from projet.src.tools.array_functions import list_to_array
+
 
 def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
     """
@@ -21,9 +23,10 @@ def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
         number of evaluations, j is the number of models and the columns are the estimated amplitude, mean and stddev of
         the Gaussian model.
     """
-    # TODO : make it so this works with a variable number of detected peaks, maybe padding ?
-    peak_means = np.array([sp.signal.find_peaks(spectrum, **kwargs)[0] for spectrum in data])
-    peak_amplitudes = np.array([spectrum[peaks] for spectrum, peaks in zip(data, peak_means)])
+    peak_means = [sp.signal.find_peaks(spectrum, **kwargs)[0] for spectrum in data]
+    peak_amplitudes = [spectrum[peaks] for spectrum, peaks in zip(data, peak_means)]
+    peak_means = list_to_array(peak_means)
+    peak_amplitudes = list_to_array(peak_amplitudes)
 
     # Estimate stddevs
     peak_stddevs = []
@@ -34,9 +37,14 @@ def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
 
         current_stddevs = []
         for intersect, mean in zip(intersects_x, means):
-            lower_bound = intersect[intersect < mean].max()
-            upper_bound = intersect[intersect > mean].min()
-            current_stddevs.append((upper_bound - lower_bound) / (2*np.sqrt(2*np.log(2))))
+            if np.isnan(mean):
+                current_stddevs.append(np.nan)
+            else:
+                lower_bound_candidates = intersect[intersect < mean]
+                lower_bound = lower_bound_candidates.max() if len(lower_bound_candidates) > 0 else 0
+                upper_bound_candidates = intersect[intersect > mean]
+                upper_bound = upper_bound_candidates.min() if len(upper_bound_candidates) > 0 else 0
+                current_stddevs.append((upper_bound - lower_bound) / (2*np.sqrt(2*np.log(2))))
 
         peak_stddevs.append(current_stddevs)
 

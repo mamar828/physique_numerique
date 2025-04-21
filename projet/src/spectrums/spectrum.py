@@ -13,7 +13,7 @@ from projet.src.models.custom_gaussian import CustomGaussian     # needed for th
 class Spectrum:
     """
     This class implements a spectrum created from models and may be given to a SpectrumDataArray or SpectrumDataset to
-    generate corresponding data.
+    generate corresponding data. Only models with the same number of parameters in a Spectrum are currently supported.
     """
 
     def __init__(
@@ -59,6 +59,8 @@ class Spectrum:
             Additional arguments to pass to each model containing the spectrum. If floats are given, each value
             corresponds to a model parameter, in the order Amp1, mean1, stddev1, Amp2, mean2, stddev2, ... If an array
             is given, the shape is (j,k) where j is the number of models and k is the number of parameters per model.
+            If no values are given, the average values of each model are used. If a model contains nan values are given,
+            the model is not considered.
 
         Returns
         -------
@@ -67,10 +69,31 @@ class Spectrum:
         """
         data = np.zeros(len(x))
         if not isinstance(model_parameters, np.ndarray):
-            model_parameters = np.array(model_parameters).reshape((len(self.models), -1))
+            model_parameters = np.array(model_parameters).reshape((-1, len(self.models[0])))
         for model, params in zip(self.models, model_parameters):
-            data += model(x, *params)
+            if not np.isnan(params).any():
+                data += model(x, *params)
         return data
+    
+    def __getitem__(self, key: slice) -> Self:
+        """
+        Gives a Spectrum object containing only the models in the given slice.
+        
+        Parameters
+        ----------
+        key : slice
+            The slice from which to choose the models.
+            
+        Returns
+        -------
+        Spectrum
+            The Spectrum object containing only the models in the given slice.
+        """
+        return self.__class__(
+            models=self.models[key],
+            number_of_channels=self.number_of_channels,
+            noise_sigma=self.noise_sigma
+        )
 
     @staticmethod
     def load(filename: str) -> Self:

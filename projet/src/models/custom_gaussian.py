@@ -73,6 +73,9 @@ class CustomGaussian(CustomModel):
         Gives a string representation of the CustomGaussian object.
         """
         return f"CustomGaussian(amplitude={self.amplitude}, mean={self.mean}, stddev={self.stddev})"
+    
+    def __len__(self):
+        return 3
 
     @property
     def avg_amplitude(self) -> float:

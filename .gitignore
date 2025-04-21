@@ -4,6 +4,7 @@
 *.gz
 *.dll
 *.dat
+*.pickle
 
 # Exclude these file prefixes
 __*

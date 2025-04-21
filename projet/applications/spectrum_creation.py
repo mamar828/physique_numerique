@@ -24,7 +24,7 @@ for file, noise_sigma in zip(["smooth", "noisy", "very_noisy"], [0, 0.4, 1]):
     fig = gl.Figure(); fig.add_elements(*elements); fig.save("test.png")
     input(f"noise_sigma={noise_sigma}, ok ?")
     
-    filename = f"projet/data/two_gaussian_components/{file}"
+    filename = f"projet/data/spectra/two_gaussian_components/{file}"
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     spec.save(f"{filename}.txt")
     fig.save(f"{filename}.pdf")

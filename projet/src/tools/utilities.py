@@ -1,4 +1,7 @@
-from graphinglib import Figure
+import numpy as np
+from graphinglib import Figure, Curve
+
+from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
 
 
 def format_time(total_seconds: float, precision: int=2) -> str:
@@ -34,15 +37,35 @@ def format_time(total_seconds: float, precision: int=2) -> str:
         end_str += f"{seconds:.{precision}f}s"
     return end_str
 
-def show_plot(plottables: list) -> None:
+def show_plot(*plottables) -> None:
     """
     Automatically plots the given plottables and shows the figure.
 
     Parameters
     ----------
-    plottables : list
+    plottables
         The list of plottables to plot.
     """
     fig = Figure()
     fig.add_elements(*plottables)
     fig.show()
+
+def show_fit_plot(data_array: SpectrumDataArray, fits: np.ndarray) -> None:
+    """
+    Automatically plots the given data array and the fitted parameters.
+
+    Parameters
+    ----------
+    data_array : SpectrumDataArray
+        The data array to plot.
+    fits : np.ndarray
+        The fitted parameters to plot.
+    """
+    for data, fit, param in zip(data_array.data, fits, data_array.params):
+        show_plot(
+            Curve(data_array.spectrum.x_values, data, label="Data"),
+            Curve(data_array.spectrum.x_values, data_array.spectrum(data_array.spectrum.x_values, param),
+                  line_width=2, label="Real"),
+            Curve(data_array.spectrum.x_values, data_array.spectrum(data_array.spectrum.x_values, fit),
+                  line_style=":", label="Fit"),
+        )
