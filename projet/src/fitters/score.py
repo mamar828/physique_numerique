@@ -12,14 +12,17 @@ def mean_squared_error(
         true_params: np.ndarray
 ) -> float:
     """
-    Computes the mean squared error (MSE) between the fitted Gaussian parameters and the true parameters.
+    Computes the mean squared error (MSE) between the fitted parameters and the true parameters. If nan values are
+    present in the fitted parameters, they are ignored in the computation. The MSE is calculated as the mean of the
+    squared differences between the fitted and true parameters: MSE = 1/N * Σ (fitted_params - true_params)^2, where N
+    is the number of parameters.
 
     Parameters
     ----------
     fitted_params : np.ndarray
-        The fitted Gaussian parameters (e.g., [mean, std_dev]). The shape should be the same as true_params.
+        The fitted parameters (e.g., [mean, std_dev]). The shape should be the same as true_params.
     true_params : np.ndarray
-        The true Gaussian parameters (e.g., [mean, std_dev]). The shape should be the same as fitted_params.
+        The true parameters (e.g., [mean, std_dev]). The shape should be the same as fitted_params.
 
     Returns
     -------
@@ -35,16 +38,20 @@ def custom_mean_squared_error(
         eps: float = 1e-10
 ) -> float:
     """
-    Computes a custom mean squared error (MSE) between the fitted Gaussian parameters and the true parameters. The CMSE
-    is calculated as the mean of the squared relative error of each parameter: 
+    Computes a custom mean squared error (MSE) between the fitted parameters and the true parameters. If nan values are
+    present in the fitted parameters, they are ignored in the computation. The CMSE is calculated as the mean of the
+    squared relative error of each parameter: 
     CMSE = 1/N * Σ ((fitted_params - true_params) / true_params)^2, where N is the number of parameters.
+    Warning: if the true_params are 0, the CMSE will be infinite. To avoid this, a small value (eps) is added to the
+    true_params to prevent infinite values. However, this may lead to large values if the fitted_params are not as small
+    as the true_params.
 
     Parameters
     ----------
     fitted_params : np.ndarray
-        The fitted Gaussian parameters (e.g., [mean, std_dev]). The shape should be the same as true_params.
+        The fitted parameters (e.g., [mean, std_dev]). The shape should be the same as true_params.
     true_params : np.ndarray
-        The true Gaussian parameters (e.g., [mean, std_dev]). The shape should be the same as fitted_params.
+        The true parameters (e.g., [mean, std_dev]). The shape should be the same as fitted_params.
     eps : float, default=1e-10
         A small value to avoid division by zero. This value is added to the true_params to prevent infinite values.
 
@@ -62,8 +69,8 @@ def mean_r2_score(
         spectrum_data: SpectrumDataObject
 ) -> float:
     """
-    Computes the coefficient of determination (R^2) between the fitted Gaussian parameters and the data. The mean
-    r2_score value of each evaluation is used.
+    Computes the coefficient of determination (R^2) between the fitted parameters and the data. The mean r2_score value
+    of each evaluation is used.
 
     Parameters
     ----------
@@ -85,9 +92,9 @@ def mean_r2_score(
     else:
         y_true = spectrum_data.data
 
-    y_pred = [
+    y_pred = (
         spectrum_data.spectrum(spectrum_data.spectrum.x_values, fitted_params_i) for fitted_params_i in fitted_params
-    ]
+    )           # this creates a generator of the fitted parameters
 
     r2_scores = []
     for y_true_i, y_pred_i in tqdm(zip(y_true, y_pred), f"Computing R^2", len(y_true), colour="RED", unit="fit"):

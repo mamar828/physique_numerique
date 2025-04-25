@@ -8,7 +8,7 @@ from projet.src.data_structures.spectrum_data_object import SpectrumDataObject
 
 class SpectrumDataset(SpectrumDataObject):
     """
-    This class implements a dataset for spectra that uses pytorch tensors to store the intensity data.
+    This class implements a dataset for spectra that uses PyTorch tensors to store the intensity data.
     """
 
     def __init__(self, data: torch.Tensor, params: torch.Tensor, spectrum: Spectrum) -> None:
@@ -56,7 +56,7 @@ class SpectrumDataset(SpectrumDataObject):
         
         return cls(tensor_data, tensor_params, spectrum)
 
-    def random_split(self, lengths: Iterable[float | int]) -> tuple[Self]:
+    def random_split(self, lengths: Iterable[float | int]) -> list[Self]:
         """
         Splits the SpectrumDataset into random Datasets of the given lengths. This method is equivalent to the
         torch.utils.data.random_split method, but returns SpectrumDataset instances instead of Subset instances. It also
@@ -71,15 +71,15 @@ class SpectrumDataset(SpectrumDataObject):
         
         Returns
         -------
-        tuple[Self]
+        list[Self]
             SpectrumDataset instances of the given lengths.
         """
-        if sum(lengths) == 1.0:
+        if np.isclose(sum(lengths), 1.0):
             split_quantities = (np.array(lengths) * len(self)).astype(int)   # get the desired length of each dataset
         else:
             split_quantities = lengths
             
         split_indices = [0] + list(np.cumsum(split_quantities))
         slices = [slice(split_indices[i], split_indices[i+1]) for i in range(len(lengths))]
-        new_datasets = (self.__class__(*self[s], self.spectrum) for s in slices)
+        new_datasets = [self.__class__(*self[s], self.spectrum) for s in slices]
         return new_datasets

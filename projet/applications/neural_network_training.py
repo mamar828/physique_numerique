@@ -37,16 +37,16 @@ fitter_class_name = fitter.__class__.__name__
 SAVE_FILE = f"{fitter_class_name}/{SPEC_FILE.replace('/', '_')}"
 # os.makedirs(f"projet/data/neural_networks/{fitter_class_name}", exist_ok=True)
 
-fitter.save(f"projet/data/neural_networks/{SAVE_FILE}_2.pt")
+fitter.save(f"projet/data/neural_networks/{SAVE_FILE}.pt")
 
 fits = fitter.predict(test_loader)
 r2 = mean_r2_score(fits, test_set)
-cmse = custom_mean_squared_error(fits, test_set.params)
+mse = mean_squared_error(fits, test_set.params)
 
 with open(f"projet/data/neural_networks/{fitter_class_name}/info.csv", "a") as f:
     if f.tell() == 0:   # if the file is empty, write the header
-        f.write(f"file,n_epochs,batch_size,n_train_samples,n_test_samples,R^2,CMSE,training_time,date\n")
+        f.write(f"file,n_epochs,batch_size,n_train_samples,n_test_samples,R^2,MSE,training_time,date\n")
 
-    f.write(f"{SPEC_FILE},{N_EPOCHS},{BATCH_SIZE},{len(train_set)},{len(test_set)},{r2:.6f},{cmse:.6f},"
+    f.write(f"{SPEC_FILE},{N_EPOCHS},{BATCH_SIZE},{len(train_set)},{len(test_set)},{r2:.6f},{mse:.6f},"
             f"{format_time(stop_time-start_time)},{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n")
-print(f"R^2: {r2:.6f}, CMSE: {cmse:.6f}")
+print(f"R^2: {r2:.6f}, MSE: {mse:.6f}")
