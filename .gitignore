@@ -1,10 +1,11 @@
 # Exclude these file extensions
 *.fits
 *.pkl
+*.pickle
 *.gz
 *.dll
 *.dat
-*.pickle
+*.pt
 
 # Exclude these file prefixes
 __*

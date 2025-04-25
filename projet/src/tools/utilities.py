@@ -1,7 +1,9 @@
 import numpy as np
 from graphinglib import Figure, Curve
 
+from projet.src.data_structures.spectrum_data_object import SpectrumDataObject
 from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
+from projet.src.data_structures.spectrum_dataset import SpectrumDataset
 
 
 def format_time(total_seconds: float, precision: int=2) -> str:
@@ -50,22 +52,34 @@ def show_plot(*plottables) -> None:
     fig.add_elements(*plottables)
     fig.show()
 
-def show_fit_plot(data_array: SpectrumDataArray, fits: np.ndarray) -> None:
+def show_fit_plot(
+        spectrum_data: SpectrumDataObject, 
+        fits: np.ndarray, 
+        show_true: bool=True
+) -> None:
     """
     Automatically plots the given data array and the fitted parameters.
 
     Parameters
     ----------
-    data_array : SpectrumDataArray
-        The data array to plot.
+    spectrum_data : SpectrumDataObject
+        The data object to plot.
     fits : np.ndarray
         The fitted parameters to plot.
+    show_true : bool, default=True
+        Whether to show the true parameters or not.
     """
-    for data, fit, param in zip(data_array.data, fits, data_array.params):
-        show_plot(
-            Curve(data_array.spectrum.x_values, data, label="Data"),
-            Curve(data_array.spectrum.x_values, data_array.spectrum(data_array.spectrum.x_values, param),
-                  line_width=2, label="Real"),
-            Curve(data_array.spectrum.x_values, data_array.spectrum(data_array.spectrum.x_values, fit),
-                  line_style=":", label="Fit"),
-        )
+    if isinstance(spectrum_data, SpectrumDataset):
+        data = spectrum_data.data.squeeze(1)
+    else:
+        data = spectrum_data.data
+    
+    x_space = np.linspace(1, spectrum_data.spectrum.number_of_channels, 1000)
+    for spectrum, fit, params in zip(data, fits, spectrum_data.params):
+        gl_data = Curve(spectrum_data.spectrum.x_values, spectrum, label="Data")
+        gl_fit = Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit")
+        gl_true = Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real")
+        if show_true:
+            show_plot(gl_data, gl_fit, gl_true)
+        else:
+            show_plot(gl_data, gl_fit)
