@@ -114,7 +114,6 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
             lr_scheduler.step()
             print(f"Epoch {i} loss: {np.mean(train_losses):.4f}")
 
-        torch.cuda.empty_cache()
         print(f"{C.LIGHT_GREEN}{'-'*29}\nTRAINING FINISHED IN {time()-start_epochs:7.2f}s\n{'-'*29}")
 
     def predict(self, data_loader: DataLoader) -> torch.Tensor:
@@ -135,20 +134,17 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         self.to(self.DEVICE)
         all_predictions = []
 
-        # Loop on every batch to add all predictions and targets
+        # Loop on every batch to add all predictions
         with torch.no_grad():
             for spectrum, _ in tqdm(data_loader, f"Predicting", len(data_loader), colour="RED", unit="batch"):
                 spectrum = spectrum.to(self.DEVICE)
 
-                # logits = self(images)
-                # predictions = torch.sigmoid(logits) > 0.5
                 predictions = self(spectrum)
                 all_predictions.append(predictions)
 
         all_predictions = torch.cat(all_predictions)
 
-        # Ensure predictions and targets are of the same dtype and device
-        all_predictions = all_predictions.to(self.DEVICE)
+        all_predictions = all_predictions.cpu()
         return all_predictions
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
