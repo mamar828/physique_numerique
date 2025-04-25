@@ -102,18 +102,13 @@ def mean_r2_score(
         mu = fitted_params[:,:,1][...,None]
         sigma = fitted_params[:,:,2][...,None]
 
-        gaussian_values = A * np.exp(-((x_values - mu) / sigma) ** 2)
+        gaussian_values = A * np.exp(- 0.5 * ((x_values - mu) / sigma) ** 2)
         y_pred = np.sum(gaussian_values, axis=1)
-        return r2_score(y_true, y_pred, multioutput="uniform_average")
 
     else:
-        y_pred = (
+        y_pred = np.array([
             spectrum_data.spectrum(spectrum_data.spectrum.x_values, fitted_params_i) 
             for fitted_params_i in fitted_params
-        )           # this creates a generator of the fitted parameters
+        ])
 
-        r2_scores = []
-        for y_true_i, y_pred_i in tqdm(zip(y_true, y_pred), f"Computing R^2", len(y_true), colour="RED", unit="fit"):
-            r2_scores.append(r2_score(y_true_i, y_pred_i))
-
-        return np.mean(r2_scores)
+    return r2_score(y_true.T, y_pred.T)

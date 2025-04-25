@@ -75,6 +75,9 @@ class CustomGaussian(CustomModel):
         return f"CustomGaussian(amplitude={self.amplitude}, mean={self.mean}, stddev={self.stddev})"
     
     def __len__(self):
+        """
+        Gives the number of parameters of the CustomGaussian object.
+        """
         return 3
 
     @property
@@ -175,4 +178,5 @@ class CustomGaussian(CustomModel):
 
         amplitude, mean, stddev = params.T[:,:,None]
 
-        return amplitude * np.exp(- (x - mean) ** 2 / (2 * stddev ** 2)), params
+        # Add a small epsilon to stddev to avoid division by zero
+        return amplitude * np.exp(- (x - mean) ** 2 / (2 * (stddev + 1e-10) ** 2)), params
