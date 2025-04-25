@@ -68,10 +68,11 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
     def training_loop(
             self,
             train_loader : DataLoader,
+            validation_loader: DataLoader=None,
             n_epochs: int=10,
             learning_rate: float=1e-3,
             learning_rate_decay: float=0.99
-    ) -> None:
+    ) -> tuple[list[float], list[float]]:
         """
         Trains the model using the given data loader.
 
@@ -79,6 +80,8 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         ----------
         train_loader : DataLoader
             Data loader used for training data.
+        validation_loader : DataLoader, default=None
+            Data loader used for validation data. If None, no validation is performed.
         n_epochs : int, default=10
             Number of epochs for training. After each epoch, the learning rate is adjusted using a ExponentialLR
             scheduler.
@@ -87,15 +90,23 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         learning_rate_decay : float, default=0.99
             Learning rate decay with which to initialize the ExponentialLR learning rate scheduler, given as the gamma
             parameter.
+
+        Returns
+        -------
+        tuple[list[float], list[float]]
+            The training and validation losses for each epoch. If no validation loader is provided, the second list will
+            be empty. This can be used to plot the training and validation losses over epochs.
         """
         self.train()
+        self.to(self.DEVICE)
 
         criterion = MSELoss()           # a mean squared error loss is used for training
         optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate)
         lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer=optimizer, gamma=learning_rate_decay)
-        self.to(self.DEVICE)
 
         start_epochs = time()
+        epoch_train_losses = []
+        epoch_validation_losses = []
         for i in range(1, n_epochs+1):
             train_losses = []       # the train losses are stored for convenience
             for spectrum, params in tqdm(train_loader, f"Epoch {i}", len(train_loader), colour="#f39811", unit="batch"):
@@ -112,9 +123,17 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
                 train_losses.append(loss.item())
             
             lr_scheduler.step()
-            print(f"Epoch {i} loss: {np.mean(train_losses):.4f}")
+            epoch_train_loss = np.mean(train_losses)
+            epoch_train_losses.append(epoch_train_loss)
+            print(f"{'Train loss':>20}: {epoch_train_loss:.4f}")
+
+            if validation_loader is not None:
+                epoch_validation_loss = self.compute_loss(validation_loader, criterion)
+                epoch_validation_losses.append(epoch_validation_loss)
+                print(f"{'Validation loss':>20}: {epoch_validation_loss:.4f}")
 
         print(f"{C.LIGHT_GREEN}{'-'*29}\nTRAINING FINISHED IN {time()-start_epochs:7.2f}s\n{'-'*29}")
+        return epoch_train_losses, epoch_validation_losses
 
     def predict(self, data_loader: DataLoader) -> torch.Tensor:
         """
@@ -123,7 +142,8 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         Parameters
         ----------
         data_loader : DataLoader
-            DataLoader containing the data to compute the predictions.
+            DataLoader containing the data to compute the predictions. A DataLoader with a very large batch size is
+            recommended to speed up the process.
 
         Returns
         -------
@@ -131,21 +151,53 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
             The predictions of the model on the given data loader.
         """
         self.eval()
-        self.to(self.DEVICE)
         all_predictions = []
 
-        # Loop on every batch to add all predictions
+        # Use torch.no_grad() to disable gradient computation for faster inference
         with torch.no_grad():
             for spectrum, _ in tqdm(data_loader, f"Predicting", len(data_loader), colour="RED", unit="batch"):
+                spectrum = spectrum.to(self.DEVICE, non_blocking=True)  # Use non_blocking for faster data transfer
+                predictions = self(spectrum)
+                all_predictions.append(predictions.cpu())
+
+        # Concatenate all predictions at once for better performance
+        return torch.cat(all_predictions, dim=0)
+
+    def compute_loss(
+            self,
+            data_loader: DataLoader,
+            criterion: Module=MSELoss()
+    ) -> float:
+        """
+        Computes the loss of the model on the given data loader. This method is identical to the
+        score.mean_squared_error function, but it uses the model to compute the predictions.
+
+        Parameters
+        ----------
+        data_loader : DataLoader
+            DataLoader containing the data to compute the loss. A DataLoader with a very large batch size is recommended
+            to speed up the process.
+        criterion : Module, default=MSELoss()
+            Loss function to use for computing the loss.
+
+        Returns
+        -------
+        float
+            The loss of the model on the given data loader.
+        """
+        all_losses = []
+
+        # Loop on every batch to add all losses
+        with torch.no_grad():
+            for spectrum, params in data_loader:
                 spectrum = spectrum.to(self.DEVICE)
+                params = params.to(self.DEVICE)
 
                 predictions = self(spectrum)
-                all_predictions.append(predictions)
+                loss = criterion(predictions, params)
+                all_losses.append(loss.item())
 
-        all_predictions = torch.cat(all_predictions)
-
-        all_predictions = all_predictions.cpu()
-        return all_predictions
+        return np.mean(all_losses)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """

@@ -8,7 +8,7 @@ from projet.src.tools.utilities import show_fit_plot
 
 
 SPEC_FILE = "distinct_gaussians/very_noisy"
-N_SAMPLES = 100000
+N_SAMPLES = 100
 fitter = CNNFitter.load(f"projet/data/neural_networks/CNNFitter/{SPEC_FILE.replace('/', '_')}.pt")
 
 spec = Spectrum.load(f"projet/data/spectra/{SPEC_FILE}.txt")
@@ -20,4 +20,4 @@ r2 = mean_r2_score(fits, dataset)
 mse = mean_squared_error(fits, dataset.params)
 print(r2, mse)
 
-# show_fit_plot(dataset, fits, show_true=True)
+show_fit_plot(dataset, fits, show_true=True)

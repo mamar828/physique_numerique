@@ -80,6 +80,6 @@ def show_fit_plot(
         gl_fit = Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit")
         gl_true = Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real")
         if show_true:
-            show_plot(gl_data, gl_fit, gl_true)
+            show_plot(gl_data, gl_true, gl_fit)
         else:
             show_plot(gl_data, gl_fit)

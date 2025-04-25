@@ -3,7 +3,6 @@ from sklearn.metrics import r2_score
 from tqdm import tqdm
 
 from projet.src.data_structures.spectrum_data_object import SpectrumDataObject
-from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
 from projet.src.data_structures.spectrum_dataset import SpectrumDataset
 
 
