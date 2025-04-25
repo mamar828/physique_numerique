@@ -1,10 +1,11 @@
 import numpy as np
 from typing import Self
 
+from projet.src.data_structures.spectrum_data_object import SpectrumDataObject
 from projet.src.spectrums.spectrum import Spectrum
 
 
-class SpectrumDataArray:
+class SpectrumDataArray(SpectrumDataObject):
     """
     This class implements a data array for spectra that uses numpy arrays to store the intensity data.
     """
@@ -27,12 +28,6 @@ class SpectrumDataArray:
         self.data = data
         self.params = params
         self.spectrum = spectrum
-
-    def __len__(self) -> int:
-        """
-        Returns the number of spectra in the SpectrumDataArray object.
-        """
-        return self.data.shape[0]
 
     @classmethod
     def generate_from_spectrum(cls, spectrum: Spectrum, n_spectra: int) -> Self:
