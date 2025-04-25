@@ -132,7 +132,7 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
                 epoch_validation_losses.append(epoch_validation_loss)
                 print(f"{'Validation loss':>20}: {epoch_validation_loss:.4f}")
 
-        print(f"{C.LIGHT_GREEN}{'-'*29}\nTRAINING FINISHED IN {time()-start_epochs:7.2f}s\n{'-'*29}")
+        print(f"{C.LIGHT_GREEN}{'-'*29}\nTRAINING FINISHED IN {time()-start_epochs:7.2f}s\n{'-'*29}{C.END}")
         return epoch_train_losses, epoch_validation_losses
 
     def predict(self, data_loader: DataLoader) -> torch.Tensor:

@@ -7,7 +7,7 @@ from projet.src.fitters.score import *
 from projet.src.tools.utilities import show_fit_plot
 
 
-SPEC_FILE = "distinct_gaussians/smooth"
+SPEC_FILE = "contaminated_gaussians/noisy"
 N_SAMPLES = 200
 fitter = CNNFitter.load(f"projet/data/neural_networks/CNNFitter/{SPEC_FILE.replace('/', '_')}.pt")
 
@@ -17,7 +17,5 @@ data_loader = DataLoader(dataset, batch_size=1)
 
 
 fits = fitter.predict(data_loader)
-r2 = mean_r2_score(fits, dataset)
-mse = mean_squared_error(fits, dataset.params)
 
-# show_fit_plot(dataset, fits, show_true=False)
+show_fit_plot(dataset, fits, show_true=False, show_individual_fits=True)

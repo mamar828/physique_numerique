@@ -55,7 +55,8 @@ def show_plot(*plottables) -> None:
 def show_fit_plot(
         spectrum_data: SpectrumDataObject, 
         fits: np.ndarray, 
-        show_true: bool=True
+        show_true: bool=True,
+        show_individual_fits: bool=False,
 ) -> None:
     """
     Automatically plots the given data array and the fitted parameters.
@@ -68,6 +69,8 @@ def show_fit_plot(
         The fitted parameters to plot.
     show_true : bool, default=True
         Whether to show the true parameters or not.
+    show_individual_fits : bool, default=False
+        Whether to show the individual fits or not. If False, only the global fit is shown (sum of each individual fit).
     """
     if isinstance(spectrum_data, SpectrumDataset):
         data = spectrum_data.data.squeeze(1)
@@ -76,10 +79,13 @@ def show_fit_plot(
     
     x_space = np.linspace(1, spectrum_data.spectrum.number_of_channels, 1000)
     for spectrum, fit, params in zip(data, fits, spectrum_data.params):
-        gl_data = Curve(spectrum_data.spectrum.x_values, spectrum, label="Data")
-        gl_fit = Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit")
-        gl_true = Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real")
+        plottables = [Curve(spectrum_data.spectrum.x_values, spectrum, label="Data")]
         if show_true:
-            show_plot(gl_data, gl_true, gl_fit)
-        else:
-            show_plot(gl_data, gl_fit)
+            plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real"))
+        if show_individual_fits:
+            plottables.extend([Curve(x_space, model(x_space, *fit_i.numpy())) 
+                               for model, fit_i in zip(spectrum_data.spectrum.models, fit)])
+
+        # Draw the global fit on top of the other plottables
+        plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit"))
+        show_plot(*plottables)
