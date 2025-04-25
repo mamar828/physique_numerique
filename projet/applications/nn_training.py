@@ -12,9 +12,9 @@ from projet.src.tools.utilities import format_time
 
 # -----TRAINING PARAMETERS-----
 SPEC_FILE = "distinct_gaussians/very_noisy"
-N_EPOCHS = 100
+N_EPOCHS = 25
 BATCH_SIZE = 500
-N_SAMPLES = 100000
+N_SAMPLES = 1000000
 train_valid_test_split = [0.6, 0.2, 0.2]
 # -----------------------------
 
