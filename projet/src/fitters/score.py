@@ -7,7 +7,10 @@ from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
 from projet.src.data_structures.spectrum_dataset import SpectrumDataset
 
 
-def mean_squared_error(fitted_params: np.ndarray, true_params: np.ndarray) -> float:
+def mean_squared_error(
+        fitted_params: np.ndarray,
+        true_params: np.ndarray
+) -> float:
     """
     Computes the mean squared error (MSE) between the fitted Gaussian parameters and the true parameters.
 
@@ -21,9 +24,38 @@ def mean_squared_error(fitted_params: np.ndarray, true_params: np.ndarray) -> fl
     Returns
     -------
     float
-        The mean squared error between the parameters.
+        The mean squared error between the parameters. It converges to 0 when the fitted parameters are close to the
+        true parameters.
     """
     return np.nanmean((fitted_params - true_params) ** 2)
+
+def custom_mean_squared_error(
+        fitted_params: np.ndarray, 
+        true_params: np.ndarray,
+        eps: float = 1e-10
+) -> float:
+    """
+    Computes a custom mean squared error (MSE) between the fitted Gaussian parameters and the true parameters. The CMSE
+    is calculated as the mean of the squared relative error of each parameter: 
+    CMSE = 1/N * Σ ((fitted_params - true_params) / true_params)^2, where N is the number of parameters.
+
+    Parameters
+    ----------
+    fitted_params : np.ndarray
+        The fitted Gaussian parameters (e.g., [mean, std_dev]). The shape should be the same as true_params.
+    true_params : np.ndarray
+        The true Gaussian parameters (e.g., [mean, std_dev]). The shape should be the same as fitted_params.
+    eps : float, default=1e-10
+        A small value to avoid division by zero. This value is added to the true_params to prevent infinite values.
+
+    Returns
+    -------
+    float
+        The custom mean squared error between the parameters. It converges to 0 when the fitted parameters are close to
+        the true parameters.
+    """
+    # The simplified CMSE equation is used
+    return np.nanmean((fitted_params / (true_params+eps) - 1) ** 2)
 
 def mean_r2_score(
         fitted_params: np.ndarray, 
@@ -45,7 +77,8 @@ def mean_r2_score(
     Returns
     -------
     float
-        The coefficient of determination between the parameters.
+        The coefficient of determination between the parameters. It converges to 1 when the fitted parameters are close
+        to the true parameters.
     """
     if isinstance(spectrum_data, SpectrumDataset):
         y_true = spectrum_data.data.squeeze(1).numpy()
