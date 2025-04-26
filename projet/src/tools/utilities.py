@@ -55,6 +55,7 @@ def show_plot(*plottables) -> None:
 def show_fit_plot(
         spectrum_data: SpectrumDataObject, 
         fits: np.ndarray, 
+        show_total_fit: bool=True,
         show_true: bool=True,
         show_individual_fits: bool=False,
 ) -> None:
@@ -67,6 +68,8 @@ def show_fit_plot(
         The data object to plot.
     fits : np.ndarray
         The fitted parameters to plot.
+    show_total_fit : bool, default=True
+        Whether to show the total fit or not.
     show_true : bool, default=True
         Whether to show the true parameters or not.
     show_individual_fits : bool, default=False
@@ -85,7 +88,8 @@ def show_fit_plot(
         if show_individual_fits:
             plottables.extend([Curve(x_space, model(x_space, *fit_i.numpy())) 
                                for model, fit_i in zip(spectrum_data.spectrum.models, fit)])
-
-        # Draw the global fit on top of the other plottables
-        plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit"))
+        if show_total_fit:
+            # Draw the global fit last to place it on top of the other plottables
+            plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit"))
+            
         show_plot(*plottables)
