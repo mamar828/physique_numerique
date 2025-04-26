@@ -18,4 +18,4 @@ data_loader = DataLoader(dataset, batch_size=1)
 
 fits = fitter.predict(data_loader)
 
-show_fit_plot(dataset, fits, show_true=False, show_individual_fits=True)
+show_fit_plot(dataset, fits, show_true=True, show_individual_fits=True)

@@ -166,19 +166,15 @@ class Spectrum:
             (n,j,k) where n is the number of spectra, j is the number of models and k is the number of parameters in
             each model.
         """
-        params = np.empty((n, self.models[0].number_of_parameters, 0))
-
-        # Create noisy base data
         data = np.random.normal(0, self.noise_sigma, (n, self.number_of_channels))
+        params = np.empty((n, len(self.models), len(self.models[0])))
 
         # Add each model's contribution
-        for model in self.models:
+        for i, model in enumerate(self.models):
             model_data, model_params = model.evaluate(self.x_values, n)
             data += model_data
-            params = np.dstack((params, model_params))
-
-        # params is currently a (n,k,j) array, we need to transpose it to (n,j,k)
-        params = np.swapaxes(params, 1, 2)
+            params[:,i,:] = model_params
+        
         return data, params
 
     def save(self, filename: str):
