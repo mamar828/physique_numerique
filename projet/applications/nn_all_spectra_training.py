@@ -19,7 +19,6 @@ N_SAMPLES = 1000000
 train_valid_test_split = [0.6, 0.2, 0.2]
 # -----------------------------
 spectra_files = glob.glob("**/*.txt", root_dir="projet/data/spectra", recursive=True)
-spectra_files.remove()
 
 for file in spectra_files:
     SPEC_FILE = file.split(".")[0]
@@ -66,5 +65,4 @@ for file in spectra_files:
 
 
 # TODO
-# optimize the second r2 version
 # check how to use all the GPU

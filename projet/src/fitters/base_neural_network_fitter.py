@@ -2,11 +2,10 @@ import numpy as np
 import torch
 from torch.nn import *
 from torch.utils.data import DataLoader
-import graphinglib as gl
-from matplotlib.colors import LinearSegmentedColormap
 from tqdm import tqdm
 from time import time
-from typing import Self, Generator
+from typing import Self
+from copy import deepcopy
 from eztcolors import Colors as C
 
 from projet.src.tools.messaging import notify_function_end
@@ -67,7 +66,7 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
     @notify_function_end
     def training_loop(
             self,
-            train_loader : DataLoader,
+            train_loader: DataLoader,
             validation_loader: DataLoader=None,
             n_epochs: int=10,
             learning_rate: float=1e-3,
@@ -81,7 +80,8 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         train_loader : DataLoader
             Data loader used for training data.
         validation_loader : DataLoader, default=None
-            Data loader used for validation data. If None, no validation is performed.
+            Data loader used for validation data. If None, no validation is performed. This allows the model to keep
+            only the best state it has achieved during training according to the validation set.
         n_epochs : int, default=10
             Number of epochs for training. After each epoch, the learning rate is adjusted using a ExponentialLR
             scheduler.
@@ -107,11 +107,14 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         start_epochs = time()
         epoch_train_losses = []
         epoch_validation_losses = []
-        for i in range(1, n_epochs+1):
+        best_validation_loss = float('inf')
+        best_model_state = None
+
+        for i in range(1, n_epochs + 1):
             train_losses = []       # the train losses are stored for convenience
             for spectrum, params in tqdm(train_loader, f"Epoch {i}", len(train_loader), colour="#f39811", unit="batch"):
-                spectrum = spectrum.to(self.DEVICE)
-                params = params.to(self.DEVICE)
+                spectrum = spectrum.to(self.DEVICE, non_blocking=True)
+                params = params.to(self.DEVICE, non_blocking=True)
 
                 optimizer.zero_grad()
 
@@ -131,6 +134,15 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
                 epoch_validation_loss = self.compute_loss(validation_loader, criterion)
                 epoch_validation_losses.append(epoch_validation_loss)
                 print(f"{'Validation loss':>20}: {epoch_validation_loss:.4f}")
+
+                # Save the model state if validation loss improves
+                if epoch_validation_loss < best_validation_loss:
+                    best_validation_loss = epoch_validation_loss
+                    best_model_state = deepcopy(self.state_dict())
+
+        # Restore the best model state
+        if best_model_state is not None:
+            self.load_state_dict(best_model_state)
 
         print(f"{C.LIGHT_GREEN}{'-'*29}\nTRAINING FINISHED IN {time()-start_epochs:7.2f}s\n{'-'*29}{C.END}")
         return epoch_train_losses, epoch_validation_losses
