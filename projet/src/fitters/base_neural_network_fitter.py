@@ -162,6 +162,7 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         torch.Tensor
             The predictions of the model on the given data loader.
         """
+        model_was_in_training = self.training
         self.eval()
         all_predictions = []
 
@@ -172,6 +173,8 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
                 predictions = self(spectrum)
                 all_predictions.append(predictions.cpu())
 
+        if model_was_in_training:
+            self.train()
         # Concatenate all predictions at once for better performance
         return torch.cat(all_predictions, dim=0)
 
@@ -197,6 +200,8 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         float
             The loss of the model on the given data loader.
         """
+        model_was_in_training = self.training
+        self.eval()
         all_losses = []
 
         # Loop on every batch to add all losses
@@ -209,6 +214,8 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
                 loss = criterion(predictions, params)
                 all_losses.append(loss.item())
 
+        if model_was_in_training:
+            self.train()
         return np.mean(all_losses)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
