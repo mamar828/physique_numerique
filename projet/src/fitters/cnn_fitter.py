@@ -37,9 +37,9 @@ class CNNFitter(BaseNeuralNetworkFitter):
         )
         self.fully_connected_layers = Sequential(
             Flatten(),  # flatten the output from the convolutional layers to a 2D tensor
-            Linear(32 * (self.number_of_channels // 4), self.number_of_channels),
-            ReLU(), # Softmax(dim=1),
-            Linear(self.number_of_channels, 3 * self.number_of_components)  # (amplitude, mean, stddev) per component
+            Linear(32 * (self.number_of_channels // 4), 128),
+            ReLU(),
+            Linear(128, 3 * self.number_of_components)  # (amplitude, mean, stddev) per component
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

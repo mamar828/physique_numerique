@@ -26,15 +26,15 @@ class ResidualBlock(Module):
             BatchNorm1d(in_out_channels),
             ReLU(),
             Conv1d(in_out_channels, in_out_channels, kernel_size=kernel_size, padding=padding),
-            BatchNorm1d(in_out_channels)
+            BatchNorm1d(in_out_channels),
         )
-        self.relu = ReLU()
+        self.activation = ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Forward pass of the residual block.
         """
-        return self.relu(x + self.block(x))  # Residual connection
+        return self.activation(x + self.block(x))  # Residual connection
 
 
 class ResNetFitter(BaseNeuralNetworkFitter):
@@ -74,9 +74,9 @@ class ResNetFitter(BaseNeuralNetworkFitter):
             MaxPool1d(2)
         )
 
-        self.output_layer = Sequential(
+        self.fully_connected_layers = Sequential(
             Flatten(),
-            Linear(32 * (number_of_channels // 4), self.number_of_channels),
+            Linear(32 * (self.number_of_channels // 4), self.number_of_channels),
             ReLU(),
             Linear(self.number_of_channels, 3 * number_of_components)
         )
@@ -98,6 +98,6 @@ class ResNetFitter(BaseNeuralNetworkFitter):
         """
         x = self.input_layer(x)
         x = self.residual_layers(x)
-        x = self.output_layer(x)
+        x = self.fully_connected_layers(x)
         x = x.reshape(x.shape[0], self.number_of_components, 3)
         return x

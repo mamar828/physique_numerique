@@ -8,6 +8,7 @@ from eztcolors import Colors as C
 from projet.src.spectrums.spectrum import Spectrum
 from projet.src.data_structures.spectrum_dataset import SpectrumDataset
 from projet.src.fitters.cnn_fitter import CNNFitter
+from projet.src.fitters.res_net_fitter import ResNetFitter
 from projet.src.fitters.score import *
 from projet.src.tools.utilities import format_time
 from projet.src.tools.messaging import telegram_send_message
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     train_valid_test_split = [0.6, 0.2, 0.2]
     # -----------------------------
     spectra_files = glob.glob("**/*.txt", root_dir="projet/data/spectra", recursive=True)
+    # spectra_files = [file for file in spectra_files if "contaminated" in file]
 
     for file in spectra_files:
         SPEC_FILE = file.split(".")[0]
@@ -33,10 +35,10 @@ if __name__ == "__main__":
         train_set, valid_set, test_set = dataset.random_split(train_valid_test_split)
 
         train_loader = DataLoader(train_set, batch_size=BATCH_SIZE, pin_memory=True, num_workers=4)
-        valid_loader = DataLoader(valid_set, batch_size=len(valid_set), pin_memory=True, num_workers=2)
-        test_loader = DataLoader(test_set, batch_size=len(test_set), pin_memory=True, num_workers=2)
+        valid_loader = DataLoader(valid_set, batch_size=len(valid_set)//10, pin_memory=True, num_workers=2)
+        test_loader = DataLoader(test_set, batch_size=len(test_set)//10, pin_memory=True, num_workers=2)
 
-        fitter = CNNFitter(number_of_components=len(spec.models), number_of_channels=spec.number_of_channels)
+        fitter = ResNetFitter(number_of_components=len(spec.models), number_of_channels=spec.number_of_channels)
         start_time = time()
         fitter.training_loop(
             train_loader=train_loader,
@@ -64,4 +66,4 @@ if __name__ == "__main__":
                     f"{mse:.6f},{format_time(stop_time-start_time)},{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n")
         print(f"R^2: {r2:.6f}, MSE: {mse:.6f}")
 
-    telegram_send_message("ALL CNN TRAINING FINISHED")
+    telegram_send_message("ALL TRAINING FINISHED")
