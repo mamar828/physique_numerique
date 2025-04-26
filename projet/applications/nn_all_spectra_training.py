@@ -10,6 +10,7 @@ from projet.src.data_structures.spectrum_dataset import SpectrumDataset
 from projet.src.fitters.cnn_fitter import CNNFitter
 from projet.src.fitters.score import *
 from projet.src.tools.utilities import format_time
+from projet.src.tools.messaging import telegram_send_message
 
 
 if __name__ == "__main__":
@@ -62,3 +63,5 @@ if __name__ == "__main__":
             f.write(f"{SPEC_FILE},{N_EPOCHS},{BATCH_SIZE},{len(train_set)},{len(valid_set)},{len(test_set)},{r2:.6f},"
                     f"{mse:.6f},{format_time(stop_time-start_time)},{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n")
         print(f"R^2: {r2:.6f}, MSE: {mse:.6f}")
+
+    telegram_send_message("ALL CNN TRAINING FINISHED")
