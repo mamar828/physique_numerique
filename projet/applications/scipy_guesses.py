@@ -21,7 +21,7 @@ if __name__ == "__main__":
         "contaminated_gaussians",
         "distinct_twin_gaussians",
         "merged_twin_gaussians",
-        #"pointy_gaussians", # Not working...
+        "pointy_gaussians",
         "single_gaussian",
         "two_gaussian_components",
     ]
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         "contaminated_gaussians": (1, 3, 2, 10),
         "distinct_twin_gaussians": (1, 3, 3, 10),
         "merged_twin_gaussians": (0, 2, 3, 2),
-        "pointy_gaussians": (1, 1, 5, 5),
+        "pointy_gaussians": (0.3, 0.3, 1, 5),
         "single_gaussian": (1, 2, 5, 10),
         "two_gaussian_components":(1, 1.5, 1, 2), 
     }
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
         np.random.seed(0)
 
-        num_samples = 1000
+        num_samples = 10
         data_array = SpectrumDataArray.generate_from_spectrum(spec, num_samples)
         sf = ScipyFitter(data_array)
 
@@ -59,16 +59,19 @@ if __name__ == "__main__":
         n_line_true = np.sum((data_array.params[:,:,0] > 0), axis=1)
         fitted_params = fits[n_line_fitted == n_line_true]
         true_params = data_array.params[n_line_fitted == n_line_true]
+        #n_line_true = n_line_true[n_line_fitted == n_line_true]
 
-        sorted = np.argsort(fitted_params[:,:,1])
-        fitted_params = np.array([
-            fitted_params[i][sorted[i]] for i in range(fitted_params.shape[0])
-        ])
-        sorted = np.argsort(true_params[:,:,1])
-        true_params = np.array([
-            true_params[i][sorted[i]] for i in range(true_params.shape[0])
-        ])
+        if fitted_params.size > 0:
+            sorted = np.argsort(fitted_params[:,:,1])
+            fitted_params = np.array([
+                fitted_params[i][sorted[i]] for i in range(fitted_params.shape[0]) #enumerate(n_line_true) #range(fitted_params.shape[0])
+            ])
 
+            sorted = np.argsort(true_params[:,:,1])
+            true_params = np.array([
+                true_params[i][sorted[i]] for i in range(true_params.shape[0])
+            ])
+            
         print(
             f"{C.GREEN}R^2: {mean_r2_score(fits, data_array)}{C.END},",
             f"{C.RED}MSE: {mean_squared_error(fitted_params, true_params)}{C.END}," if fitted_params.size > 0 else f"{C.RED}MSE: NaN{C.END},",
