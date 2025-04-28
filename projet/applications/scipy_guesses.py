@@ -54,6 +54,25 @@ if __name__ == "__main__":
 
         estimates = find_peaks_gaussian_estimates(data_array.data, prominence=p, height=h, width=w, distance=d)
         fits = sf.fit(estimates)
-        print(f"{C.GREEN}R^2: {mean_r2_score(fits, data_array)}{C.END}, ", f"{(time() - start)/ num_samples:.4f} s/spectrum")
+
+        n_line_fitted = np.sum((fits[:,:,0] > 0), axis=1) # .any(axis=2, keepdims=True)
+        n_line_true = np.sum((data_array.params[:,:,0] > 0), axis=1)
+        fitted_params = fits[n_line_fitted == n_line_true]
+        true_params = data_array.params[n_line_fitted == n_line_true]
+
+        sorted = np.argsort(fitted_params[:,:,1])
+        fitted_params = np.array([
+            fitted_params[i][sorted[i]] for i in range(fitted_params.shape[0])
+        ])
+        sorted = np.argsort(true_params[:,:,1])
+        true_params = np.array([
+            true_params[i][sorted[i]] for i in range(true_params.shape[0])
+        ])
+
+        print(
+            f"{C.GREEN}R^2: {mean_r2_score(fits, data_array)}{C.END},",
+            f"{C.RED}MSE: {mean_squared_error(fitted_params, true_params)}{C.END}," if fitted_params.size > 0 else f"{C.RED}MSE: NaN{C.END},",
+            f"{(time() - start)/ num_samples:.4f} s/spectrum"
+        )
 
         #show_fit_plot(data_array, fits, show_individual_fits=False, show_total_fit=True, show_true=False)
