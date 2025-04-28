@@ -48,13 +48,16 @@ class ScipyFitter:
                 return np.full(guesses.size, np.nan)
 
             # Flatten valid guesses and fit
-            params = sp.optimize.curve_fit(
-                f=self.data_array.spectrum[:valid_guesses.shape[0]],
-                xdata=x_values,
-                ydata=spectrum,
-                p0=valid_guesses.flatten(),
-                maxfev=10000
-            )[0]
+            try:
+                params = sp.optimize.curve_fit(
+                    f=self.data_array.spectrum[:valid_guesses.shape[0]],
+                    xdata=x_values,
+                    ydata=spectrum,
+                    p0=valid_guesses.flatten(),
+                    maxfev=10000
+                )[0]
+            except RuntimeError:
+                params = np.full(valid_guesses.shape[1], np.nan)
 
             # Reshape to match the original guesses' shape
             result = np.full(guesses.size, np.nan)

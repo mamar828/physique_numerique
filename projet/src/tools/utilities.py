@@ -86,7 +86,7 @@ def show_fit_plot(
         if show_true:
             plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real"))
         if show_individual_fits:
-            plottables.extend([Curve(x_space, model(x_space, *fit_i.numpy())) 
+            plottables.extend([Curve(x_space, model(x_space, *fit_i)) 
                                for model, fit_i in zip(spectrum_data.spectrum.models, fit)])
         if show_total_fit:
             # Draw the global fit last to place it on top of the other plottables

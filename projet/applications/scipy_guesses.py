@@ -1,0 +1,59 @@
+import numpy as np
+
+from eztcolors import Colors as C
+from time import time
+
+import warnings
+warnings.simplefilter("ignore")
+
+from projet.src.spectrums.spectrum import Spectrum
+from projet.src.tools.utilities import *
+from projet.src.models.custom_gaussian import CustomGaussian
+from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
+from projet.src.spectrums.initial_guesses import find_peaks_gaussian_estimates
+from projet.src.fitters.scipy_fitter import ScipyFitter
+from projet.src.fitters.score import *
+
+
+if __name__ == "__main__":
+    spectras = [
+        "distinct_gaussians",
+        "contaminated_gaussians",
+        "distinct_twin_gaussians",
+        "merged_twin_gaussians",
+        #"pointy_gaussians", # Not working...
+        "single_gaussian",
+        "two_gaussian_components",
+    ]
+    noise_levels = ["smooth", "noisy", "very_noisy"]
+    # 3, 3, 5, 10
+    guess_params = {
+        "distinct_gaussians": (1.5, 1.5, 2, 10),
+        "contaminated_gaussians": (1, 3, 2, 10),
+        "distinct_twin_gaussians": (1, 3, 3, 10),
+        "merged_twin_gaussians": (0, 2, 3, 2),
+        "pointy_gaussians": (1, 1, 5, 5),
+        "single_gaussian": (1, 2, 5, 10),
+        "two_gaussian_components":(1, 1.5, 1, 2), 
+    }
+    spectras, noise_levels = np.meshgrid(spectras, noise_levels)
+    spectras, noise_levels = spectras.flatten(), noise_levels.flatten()
+
+    for spectra, noise in zip(spectras, noise_levels):
+        start = time()
+        print(f"{C.YELLOW}{spectra} - {noise}{C.END}:", end=" ")
+        # Load the spectrum files
+        spec = Spectrum.load(f"projet/data/spectra/{spectra}/{noise}.txt")
+        p, h, w, d = guess_params[spectra]
+
+        np.random.seed(0)
+
+        num_samples = 1000
+        data_array = SpectrumDataArray.generate_from_spectrum(spec, num_samples)
+        sf = ScipyFitter(data_array)
+
+        estimates = find_peaks_gaussian_estimates(data_array.data, prominence=p, height=h, width=w, distance=d)
+        fits = sf.fit(estimates)
+        print(f"{C.GREEN}R^2: {mean_r2_score(fits, data_array)}{C.END}, ", f"{(time() - start)/ num_samples:.4f} s/spectrum")
+
+        #show_fit_plot(data_array, fits, show_individual_fits=False, show_total_fit=True, show_true=False)

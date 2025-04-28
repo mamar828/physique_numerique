@@ -93,6 +93,9 @@ def mean_r2_score(
     else:
         y_true = spectrum_data.data
 
+    # Remove NaN values from fitted_params
+    fitted_params = np.where(np.isnan(fitted_params).any(axis=2, keepdims=True), 0, fitted_params)
+
     # If spectrum_data.spectrum contains only gaussians, the computation can be greatly accelerated
     if all(isinstance(model, CustomGaussian) for model in spectrum_data.spectrum.models):
         # Convert all parameters to 3D arrays so the operations are made for all spectra, for all models and for all
