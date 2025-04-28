@@ -76,9 +76,9 @@ class ResNetFitter(BaseNeuralNetworkFitter):
 
         self.fully_connected_layers = Sequential(
             Flatten(),
-            Linear(32 * (self.number_of_channels // 4), self.number_of_channels),
+            Linear(32 * (self.number_of_channels // 4), 100),
             ReLU(),
-            Linear(self.number_of_channels, 3 * number_of_components)
+            Linear(100, 3 * number_of_components)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

@@ -44,6 +44,7 @@ if __name__ == "__main__":
             train_loader=train_loader,
             validation_loader=valid_loader,
             n_epochs=N_EPOCHS,
+            # learning_rate=1e-5,
         )
         stop_time = time()
 

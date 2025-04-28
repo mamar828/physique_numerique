@@ -86,7 +86,7 @@ class Spectrum:
             
         Returns
         -------
-        Spectrum
+        Self
             The Spectrum object containing only the models in the given slice.
         """
         return self.__class__(
@@ -107,7 +107,7 @@ class Spectrum:
 
         Returns
         -------
-        Spectrum
+        Self
             The loaded Spectrum object.
         """
         with open(filename, "r") as f:

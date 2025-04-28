@@ -27,6 +27,7 @@ def find_peaks_gaussian_estimates(data: np.ndarray, **kwargs) -> np.ndarray:
     peak_amplitudes = [spectrum[peaks] for spectrum, peaks in zip(data, peak_means)]
     peak_means = list_to_array(peak_means)
     peak_amplitudes = list_to_array(peak_amplitudes)
+    assert peak_means.size > 0, "No peaks were detected in the data. Please check the parameters passed to find_peaks."
 
     # Estimate stddevs
     peak_stddevs = []

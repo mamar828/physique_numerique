@@ -166,7 +166,6 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
         self.eval()
         all_predictions = []
 
-        # Use torch.no_grad() to disable gradient computation for faster inference
         with torch.no_grad():
             for spectrum, _ in tqdm(data_loader, f"Predicting", len(data_loader), colour="RED", unit="batch"):
                 spectrum = spectrum.to(self.DEVICE, non_blocking=True)  # Use non_blocking for faster data transfer
@@ -175,7 +174,6 @@ class BaseNeuralNetworkFitter(torch.nn.Module):
 
         if model_was_in_training:
             self.train()
-        # Concatenate all predictions at once for better performance
         return torch.cat(all_predictions, dim=0)
 
     def compute_loss(
