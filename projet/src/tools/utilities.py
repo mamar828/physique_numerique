@@ -1,5 +1,6 @@
 import numpy as np
 from graphinglib import Figure, Curve
+from torch import Tensor
 
 from projet.src.data_structures.spectrum_data_object import SpectrumDataObject
 from projet.src.data_structures.spectrum_data_array import SpectrumDataArray
@@ -93,8 +94,12 @@ def show_fit_plot(
         if show_true:
             plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real"))
         if show_individual_fits:
-            plottables.extend([Curve(x_space, model(x_space, *fit_i)) 
-                               for model, fit_i in zip(spectrum_data.spectrum.models, fit)])
+            if isinstance(fit, Tensor):
+                plottables.extend([Curve(x_space, model(x_space, *fit_i.numpy())) 
+                                   for model, fit_i in zip(spectrum_data.spectrum.models, fit)])
+            else:
+                plottables.extend([Curve(x_space, model(x_space, *fit_i)) 
+                                   for model, fit_i in zip(spectrum_data.spectrum.models, fit)])
         if show_total_fit:
             # Draw the global fit last to place it on top of the other plottables
             plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, fit), line_style=":", label="Fit"))
