@@ -51,10 +51,10 @@ if __name__ == "__main__":
         spec = Spectrum.load(f"projet/data/spectra/{spectra}/{noise}.txt")
         p, h, w, d = guess_params[spectra]
 
-        np.random.seed(74)
+        np.random.seed(2)
 
         # two components noisy: seed=2
-        # contaminated noisy ou very noissy: seed=737
+        # contaminated noisy ou very noissy: seed=737, 738
         # single gaussian smooth: seed=0
         #
 
