@@ -1,4 +1,5 @@
 import numpy as np
+import pyperclip as pc
 
 from eztcolors import Colors as C
 from time import time
@@ -17,10 +18,10 @@ from projet.src.fitters.score import *
 
 if __name__ == "__main__":
     spectras = [
-        "distinct_gaussians",
+        #"distinct_gaussians",
         "contaminated_gaussians",
-        "distinct_twin_gaussians",
-        "merged_twin_gaussians",
+        #"distinct_twin_gaussians",
+        #"merged_twin_gaussians",
         "pointy_gaussians",
         "single_gaussian",
         "two_gaussian_components",
@@ -33,11 +34,15 @@ if __name__ == "__main__":
         "distinct_twin_gaussians": (1, 3, 3, 10),
         "merged_twin_gaussians": (0, 2, 3, 2),
         "pointy_gaussians": (1, 1, 0.1, 2),
-        "single_gaussian": (1, 2, 5, 10),
+        "single_gaussian": (0, 0, 5, 80),
         "two_gaussian_components":(1, 1.5, 1, 2), 
     }
     spectras, noise_levels = np.meshgrid(spectras, noise_levels)
     spectras, noise_levels = spectras.flatten(), noise_levels.flatten()
+
+    results = {}
+    for nl in noise_levels:
+        results[nl] = {}
 
     for spectra, noise in zip(spectras, noise_levels):
         start = time()
@@ -46,9 +51,14 @@ if __name__ == "__main__":
         spec = Spectrum.load(f"projet/data/spectra/{spectra}/{noise}.txt")
         p, h, w, d = guess_params[spectra]
 
-        np.random.seed(0)
+        np.random.seed(74)
 
-        num_samples = 1000
+        # two components noisy: seed=2
+        # contaminated noisy ou very noissy: seed=737
+        # single gaussian smooth: seed=0
+        #
+
+        num_samples = 1
         data_array = SpectrumDataArray.generate_from_spectrum(spec, num_samples)
         sf = ScipyFitter(data_array)
 
@@ -83,12 +93,27 @@ if __name__ == "__main__":
         r2 = mean_r2_score(fits, data_array)
         if fitted_params.size > 0:
             mse, mse_list = mean_squared_error(fitted_params, true_params)
+        else:
+            mse = np.nan
+            mse_list = np.array([np.nan])
         print(
             f"{C.GREEN}R^2: {r2}{C.END},",
             f"{C.RED}MSE: {mse}{C.END}," if fitted_params.size > 0 else f"{C.RED}MSE: NaN{C.END},",
             f"{(time() - start)/ num_samples:.4f} s/spectrum"
         )
 
-        print(mse_list[mse_list > 100])
-        if fitted_params.size > 0:
-            show_fit_plot(data_array, fits, index=np.where(n_line_fitted == n_line_true)[0][np.where(mse_list > 100)].reshape(-1), show_individual_fits=True, show_total_fit=False, show_true=True)
+        results[noise][spectra] = {
+            "r2": r2,
+            "mse": mse,
+            "percentage": percentage,
+        }
+
+        show_fit_plot(data_array, fits, show_individual_fits=True, show_total_fit=False, show_true=True)
+        show = False
+        if fitted_params.size > 0 and show:
+            pass
+            #print(mse_list[mse_list > 100])
+            #show_fit_plot(data_array, fits, index=np.where(n_line_fitted == n_line_true)[0][np.where(mse_list > 100)].reshape(-1), show_individual_fits=True, show_total_fit=False, show_true=True)
+
+    pc.copy(results)
+    print("Results copied to clipboard.")
