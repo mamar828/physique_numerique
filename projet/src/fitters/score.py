@@ -30,10 +30,12 @@ def mean_squared_error(
         The mean squared error between the parameters. It converges to 0 when the fitted parameters are close to the
         true parameters.
     """
-    true_p = np.full(fitted_params.size, np.nan)
-    true_p[:true_params.size] = true_params.flatten()
-    true_p = true_p.reshape(fitted_params.shape)
-    return np.nanmean((fitted_params - true_p) ** 2)
+    #true_p = np.full(fitted_params.size, np.nan)
+    #true_p[:true_params.size] = true_params.flatten()
+    #true_p = true_p.reshape(fitted_params.shape)
+
+    #print((fitted_params - true_p) **2)
+    return np.nanmean((fitted_params - true_params) ** 2), np.nanmean((fitted_params - true_params) ** 2, axis=(1, 2))
 
 def custom_mean_squared_error(
         fitted_params: np.ndarray, 

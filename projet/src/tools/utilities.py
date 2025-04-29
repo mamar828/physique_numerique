@@ -58,6 +58,7 @@ def show_fit_plot(
         show_total_fit: bool=True,
         show_true: bool=True,
         show_individual_fits: bool=False,
+        index: np.ndarray=None
 ) -> None:
     """
     Automatically plots the given data array and the fitted parameters.
@@ -75,13 +76,19 @@ def show_fit_plot(
     show_individual_fits : bool, default=False
         Whether to show the individual fits or not. If False, only the global fit is shown (sum of each individual fit).
     """
+    
+    if index is None:
+        index = np.arange(spectrum_data.data.shape[0])
     if isinstance(spectrum_data, SpectrumDataset):
         data = spectrum_data.data.squeeze(1)
     else:
-        data = spectrum_data.data
+        data = spectrum_data.data[index]
+    
+    #print(fits[index])
+    #print(spectrum_data.params[index])
     
     x_space = np.linspace(1, spectrum_data.spectrum.number_of_channels, 1000)
-    for spectrum, fit, params in zip(data, fits, spectrum_data.params):
+    for spectrum, fit, params in zip(data, fits[index], spectrum_data.params[index]):
         plottables = [Curve(spectrum_data.spectrum.x_values, spectrum, label="Data")]
         if show_true:
             plottables.append(Curve(x_space, spectrum_data.spectrum(x_space, params), line_width=2, label="Real"))
