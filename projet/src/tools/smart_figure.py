@@ -60,6 +60,8 @@ class SmartFigure:
         elements: Optional[list[Plottable]] = [],
         show_legend: bool = False,                      # NEW
         legend_location: str = "best",                  # NEW
+        xticks: Optional[ArrayLike] = None,            # NEW
+        yticks: Optional[ArrayLike] = None,       # NEW
     ) -> None:
         self._num_rows = num_rows
         self._num_cols = num_cols
@@ -87,6 +89,8 @@ class SmartFigure:
         self._figure_style = figure_style
         self._show_legend = show_legend                  # NEW
         self._legend_location = legend_location          # NEW
+        self._xticks = xticks                            # NEW
+        self._yticks = yticks                            # NEW
 
         self._elements = {}
         for i, element in enumerate(elements):
@@ -268,6 +272,12 @@ class SmartFigure:
                 # Remove axes
                 if self._remove_axes:
                     ax.axis("off")
+
+                # NEW
+                if self._xticks:
+                    ax.set_xticks(self._xticks)
+                if self._yticks:
+                    ax.set_yticks(self._yticks)
 
                 ax.set_aspect(self._aspect_ratio)
 
