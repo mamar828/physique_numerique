@@ -9,7 +9,7 @@
 
 # Exclude these file prefixes
 __*
-.*  
+.*
 
 # Do not ignore the hidden .gitignore file
 !.gitignore
@@ -19,3 +19,4 @@ tests.*
 tests
 figures
 notes.txt
+media
